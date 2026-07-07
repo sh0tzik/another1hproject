@@ -216,12 +216,12 @@ RunService.RenderStepped:Connect(function()
     local enabled = Library.Flags["Chams_Enabled"]
     
     local visFlag = Library.Flags["Chams_VisibleColor"]
-    local visColor = type(visFlag) == "table" and visFlag[1] or visFlag or Color3.fromRGB(0, 255, 0)
-    local visAlpha = type(visFlag) == "table" and visFlag[2] or 0
+    local visColor = type(visFlag) == "table" and visFlag.Color or visFlag or Color3.fromRGB(0, 255, 0)
+    local visAlpha = type(visFlag) == "table" and visFlag.Alpha or 0
     
     local hidFlag = Library.Flags["Chams_HiddenColor"]
-    local hidColor = type(hidFlag) == "table" and hidFlag[1] or hidFlag or Color3.fromRGB(255, 0, 0)
-    local hidAlpha = type(hidFlag) == "table" and hidFlag[2] or 0
+    local hidColor = type(hidFlag) == "table" and hidFlag.Color or hidFlag or Color3.fromRGB(255, 0, 0)
+    local hidAlpha = type(hidFlag) == "table" and hidFlag.Alpha or 0
 
     local materialType = Library.Flags["Chams_Material"] or "ForceField"
     

@@ -28,12 +28,12 @@ RageWeapon:Toggle({ Name = "No Spread", Flag = "Rage_NoSpread", Default = false,
 -- LEGIT TAB
 -- ========================================================================
 local LegitAimbot = LegitTab:Section({ Name = "Aimbot", Side = 1 })
-LegitAimbot:Toggle({ Name = "Enabled", Flag = "Legit_AimbotEnabled", Default = false, Callback = function(State) end })
-LegitAimbot:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
+local LegitAimToggle = LegitAimbot:Toggle({ Name = "Enabled", Flag = "Legit_AimbotEnabled", Default = false, Callback = function(State) end })
+LegitAimToggle:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
 LegitAimbot:Slider({ Name = "Smoothing", Flag = "Legit_Smooth", Min = 1, Max = 10, Default = 5, Decimals = 1, Callback = function(Value) end })
 
 local LegitTriggerbot = LegitTab:Section({ Name = "Triggerbot", Side = 2 })
-LegitTriggerbot:Toggle({ Name = "Enabled", Flag = "Legit_TriggerbotEnabled", Default = false, Callback = function(State) end })
+local TriggerToggle = LegitTriggerbot:Toggle({ Name = "Enabled", Flag = "Legit_TriggerbotEnabled", Default = false, Callback = function(State) end })
 
 
 -- ========================================================================
@@ -129,7 +129,8 @@ Library:RefreshConfigsList(ConfigListbox)
 
 -- UI Settings
 local MenuSection = SettingsTab:Section({ Name = "Menu", Side = 2 })
-MenuSection:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.RightShift, Callback = function(State) end })
+local MenuToggle = MenuSection:Toggle({ Name = "Menu Keybind", Flag = "MenuToggle_Dummy", Default = false })
+MenuToggle:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.RightShift, Callback = function(State) end })
 
 Library:Watermark("Avidbot | v1.0")
 Library:Notification("Successfully loaded Avidbot!", 5, Color3.fromRGB(150, 150, 255))

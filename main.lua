@@ -2,14 +2,65 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tz
 
 -- Initial Silent Aim Configuration
 _G.Avidbot_SilentAim = _G.Avidbot_SilentAim or {}
-_G.Avidbot_SilentAim.enabled = false
-_G.Avidbot_SilentAim.esp = false
-_G.Avidbot_SilentAim.c4esp = false
-_G.Avidbot_SilentAim.showfov = false
-_G.Avidbot_SilentAim.autoshoot = false
-_G.Avidbot_SilentAim.hitchance = 65
-_G.Avidbot_SilentAim.missspread = 5
-_G.Avidbot_SilentAim.fov = 100
+local defaultSilentAim = {
+    enabled = false,
+    teamcheck = true,
+    wallcheck = true,
+    deathcheck = true,
+    ffcheck = true,
+    hostilecheck = true,
+    trespasscheck = true,
+    vehiclecheck = true,
+    criminalsnoinnmates = true,
+    inmatesnocriminals = true,
+    shieldbreaker = true,
+    shieldfrontangle = 0.3,
+    shieldrandomhead = true,
+    shieldheadchance = 30,
+    taserbypasshostile = false,
+    taserbypasstrespass = false,
+    taseralwayshit = true,
+    ifplayerstill = false,
+    stillthreshold = 0.5,
+    hitchance = 65,
+    hitchanceAutoOnly = false,
+    distancebasedhitchance = false,
+    distancehitchance1dist = 200,
+    distancehitchance1value = 30,
+    distancehitchance2dist = 350,
+    distancehitchance2value = 20,
+    distancehitchance3dist = 500,
+    distancehitchance3value = 10,
+    distancehitchance4dist = 650,
+    distancehitchance4value = 5,
+    distancehitchance5dist = 800,
+    distancehitchance5value = 1,
+    autoshoot = false,
+    autoshootweapon = "Any",
+    autoshootdelay = 0.12,
+    autoshootstartdelay = 0.2,
+    aimmaxdist = 100,
+    missspread = 5,
+    shotgunnaturalspread = true,
+    shotgungamehandled = false,
+    prioritizeclosest = true,
+    prioritizecriminals = true,
+    targetstickiness = false,
+    targetstickinessduration = 0.6,
+    targetstickinessrandom = false,
+    targetstickinessmin = 0.3,
+    targetstickinessmax = 0.7,
+    fov = 100,
+    showfov = false,
+    showtargetline = false,
+    esp = false,
+    c4esp = false
+}
+for k, v in pairs(defaultSilentAim) do
+    if _G.Avidbot_SilentAim[k] == nil then
+        _G.Avidbot_SilentAim[k] = v
+    end
+end
 
 --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!

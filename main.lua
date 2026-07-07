@@ -129,7 +129,9 @@ Library:RefreshConfigsList(ConfigListbox)
 -- UI Settings
 local MenuSection = SettingsTab:Section({ Name = "Menu", Side = 2 })
 local MenuToggle = MenuSection:Toggle({ Name = "Menu Keybind", Flag = "MenuToggle_Dummy", Default = false })
-MenuToggle:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.RightShift, Callback = function(State) end })
+MenuToggle:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.Insert, Callback = function(State)
+    Library.Window.Instance.Enabled = State
+end })
 
 Library:Watermark("Avidbot | v1.0")
 Library:Notification("Successfully loaded Avidbot!", 5, Color3.fromRGB(150, 150, 255))

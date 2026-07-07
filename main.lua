@@ -1694,11 +1694,11 @@ end })
 LegitAimToggle:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
 LegitAimbot:Slider({ Name = "Smoothing", Flag = "Legit_Smooth", Min = 1, Max = 10, Default = 5, Decimals = 1, Callback = function(Value) end })
 
-LegitAimbot:Slider({ Name = "Hit Chance", Flag = "Legit_HitChance", Min = 0, Max = 100, Default = 65, Decimals = 0, Callback = function(Value)
+LegitAimbot:Slider({ Name = "Hit Chance", Flag = "Legit_HitChance", Min = 0, Max = 100, Default = 65, Decimals = 1, Callback = function(Value)
     _G.Avidbot_SilentAim.hitchance = Value
 end })
 
-LegitAimbot:Slider({ Name = "Miss Spread", Flag = "Legit_MissSpread", Min = 0, Max = 20, Default = 5, Decimals = 0, Callback = function(Value)
+LegitAimbot:Slider({ Name = "Miss Spread", Flag = "Legit_MissSpread", Min = 0, Max = 20, Default = 5, Decimals = 1, Callback = function(Value)
     _G.Avidbot_SilentAim.missspread = Value
 end })
 
@@ -1730,7 +1730,7 @@ ChamsToggle:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", D
 ChamsToggle:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
 
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
-ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value)
+ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 1, Callback = function(Value)
     _G.Avidbot_SilentAim.fov = Value
 end })
 ViewmodelSection:Toggle({ Name = "Show FOV Circle", Flag = "Visuals_ShowFOV", Default = false, Callback = function(State)
@@ -1742,8 +1742,8 @@ end })
 -- MISC TAB
 -- ========================================================================
 local MovementSection = MiscTab:Section({ Name = "Movement", Side = 1 })
-MovementSection:Slider({ Name = "WalkSpeed", Flag = "Misc_WalkSpeed", Min = 16, Max = 150, Default = 16, Decimals = 0, Suffix = " WS", Callback = function(Value) end })
-MovementSection:Slider({ Name = "JumpPower", Flag = "Misc_JumpPower", Min = 50, Max = 200, Default = 50, Decimals = 0, Suffix = " JP", Callback = function(Value) end })
+MovementSection:Slider({ Name = "WalkSpeed", Flag = "Misc_WalkSpeed", Min = 16, Max = 150, Default = 16, Decimals = 1, Suffix = " WS", Callback = function(Value) end })
+MovementSection:Slider({ Name = "JumpPower", Flag = "Misc_JumpPower", Min = 50, Max = 200, Default = 50, Decimals = 1, Suffix = " JP", Callback = function(Value) end })
 
 local ServerSection = MiscTab:Section({ Name = "Server", Side = 2 })
 ServerSection:Button({ Name = "Rejoin", Callback = function() end })

@@ -1,5 +1,18 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tzik/another1hproject/main/supremacy.lua?t=" .. tostring(tick())))()
 
+-- Initial Silent Aim Configuration
+_G.Avidbot_SilentAim = _G.Avidbot_SilentAim or {}
+_G.Avidbot_SilentAim.enabled = false
+_G.Avidbot_SilentAim.esp = false
+_G.Avidbot_SilentAim.c4esp = false
+_G.Avidbot_SilentAim.showfov = false
+_G.Avidbot_SilentAim.autoshoot = false
+
+-- Load the Silent Aim Core
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tzik/another1hproject/main/v.lua?t=" .. tostring(tick())))()
+end)
+
 local Window = Library:Window({
     Name = "Avidbot",
     Size = UDim2.new(0, 563, 0, 558),
@@ -28,7 +41,9 @@ RageWeapon:Toggle({ Name = "No Spread", Flag = "Rage_NoSpread", Default = false,
 -- LEGIT TAB
 -- ========================================================================
 local LegitAimbot = LegitTab:Section({ Name = "Aimbot", Side = 1 })
-local LegitAimToggle = LegitAimbot:Toggle({ Name = "Enabled", Flag = "Legit_AimbotEnabled", Default = false, Callback = function(State) end })
+local LegitAimToggle = LegitAimbot:Toggle({ Name = "Enabled", Flag = "Legit_AimbotEnabled", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.enabled = State
+end })
 LegitAimToggle:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
 LegitAimbot:Slider({ Name = "Smoothing", Flag = "Legit_Smooth", Min = 1, Max = 10, Default = 5, Decimals = 1, Callback = function(Value) end })
 
@@ -51,7 +66,12 @@ ChamsToggle:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", D
 ChamsToggle:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
 
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
-ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value) end })
+ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value)
+    _G.Avidbot_SilentAim.fov = Value
+end })
+ViewmodelSection:Toggle({ Name = "Show FOV Circle", Flag = "Visuals_ShowFOV", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.showfov = State
+end })
 
 
 -- ========================================================================

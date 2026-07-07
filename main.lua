@@ -45,10 +45,10 @@ ESPSection:Toggle({ Name = "Boxes", Flag = "ESP_Boxes", Default = false, Callbac
 ESPSection:Toggle({ Name = "Names", Flag = "ESP_Names", Default = false, Callback = function(State) end })
 
 local ChamsSection = VisualsTab:Section({ Name = "Chams", Side = 1 })
-ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_Enabled", Default = false, Callback = function(State) end })
+local ChamsToggle = ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_Enabled", Default = false, Callback = function(State) end })
 ChamsSection:Dropdown({ Name = "Material", Flag = "Chams_Material", Items = {"Plastic", "ForceField", "Neon", "Glass", "Metal", "Ice"}, Default = "ForceField", Multi = false, Callback = function() end })
-ChamsSection:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", Default = Color3.fromRGB(0, 255, 0), Callback = function() end })
-ChamsSection:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
+ChamsToggle:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", Default = Color3.fromRGB(0, 255, 0), Callback = function() end })
+ChamsToggle:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
 ChamsSection:Slider({ Name = "Transparency", Flag = "Chams_Transparency", Min = 0, Max = 100, Default = 50, Decimals = 0, Suffix = "%", Callback = function() end })
 
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })

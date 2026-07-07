@@ -1,119 +1,71 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tzik/another1hproject/main/Avidbot.lua?t=" .. tostring(tick())))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tzik/another1hproject/main/supremacy.lua?t=" .. tostring(tick())))()
 
 local Window = Library:Window({
     Name = "Avidbot",
     Size = UDim2.new(0, 563, 0, 558),
-    Resizeable = true, -- Управляет тем, можно ли растягивать окно за правый нижний угол
-    MinimumSize = Vector2.new(450, 400) -- Минимальный размер окна
+    Resizeable = true,
+    MinimumSize = Vector2.new(450, 400)
 })
 
-local MainTab = Window:Page({
-    Name = "Combat",
-    Columns = 2
-})
+local RageTab = Window:Page({ Name = "Rage", Columns = 2 })
+local LegitTab = Window:Page({ Name = "Legit", Columns = 2 })
+local VisualsTab = Window:Page({ Name = "Visuals", Columns = 2 })
+local MiscTab = Window:Page({ Name = "Misc", Columns = 2 })
 
-local MainSection = MainTab:Section({
-    Name = "Aimbot",
-    Side = 1
-})
+-- ========================================================================
+-- RAGE TAB
+-- ========================================================================
+local RageAimbot = RageTab:Section({ Name = "Aimbot", Side = 1 })
+RageAimbot:Toggle({ Name = "Enabled", Flag = "Rage_AimbotEnabled", Default = false, Callback = function(State) end })
+RageAimbot:Toggle({ Name = "Silent Aim", Flag = "Rage_SilentAim", Default = false, Callback = function(State) end })
 
-local AimbotToggle = MainSection:Toggle({
-    Name = "Enable Aimbot",
-    Flag = "AimbotEnabled",
-    Default = false,
-    Callback = function(State)
-        print("Aimbot is now:", State)
-    end
-})
+local RageWeapon = RageTab:Section({ Name = "Weapon", Side = 2 })
+RageWeapon:Toggle({ Name = "No Recoil", Flag = "Rage_NoRecoil", Default = false, Callback = function(State) end })
+RageWeapon:Toggle({ Name = "No Spread", Flag = "Rage_NoSpread", Default = false, Callback = function(State) end })
 
-AimbotToggle:Keybind({
-    Name = "Aimbot Keybind",
-    Flag = "AimbotKeybind",
-    Mode = "Toggle",
-    Default = Enum.KeyCode.E,
-    Callback = function(State)
-        print("Aimbot Key pressed")
-    end
-})
 
-AimbotToggle:Colorpicker({
-    Name = "FOV Circle Color",
-    Flag = "FOVColor",
-    Default = Color3.fromRGB(255, 105, 180),
-    Callback = function(Color, Alpha)
-        print("FOV Color changed:", Color)
-    end
-})
+-- ========================================================================
+-- LEGIT TAB
+-- ========================================================================
+local LegitAimbot = LegitTab:Section({ Name = "Aimbot", Side = 1 })
+LegitAimbot:Toggle({ Name = "Enabled", Flag = "Legit_AimbotEnabled", Default = false, Callback = function(State) end })
+LegitAimbot:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
+LegitAimbot:Slider({ Name = "Smoothing", Flag = "Legit_Smooth", Min = 1, Max = 10, Default = 5, Decimals = 1, Callback = function(Value) end })
 
-local Dropdown = MainSection:Dropdown({
-    Name = "Target Part",
-    Flag = "TargetPart",
-    Items = {"Head", "HumanoidRootPart", "Torso"},
-    Default = "Head",
-    MaxSize = 75,
-    Multi = false,
-    Callback = function(Value)
-        print("Target part selected:", Value)
-    end
-})
+local LegitTriggerbot = LegitTab:Section({ Name = "Triggerbot", Side = 2 })
+LegitTriggerbot:Toggle({ Name = "Enabled", Flag = "Legit_TriggerbotEnabled", Default = false, Callback = function(State) end })
 
-local MiscSection = MainTab:Section({
-    Name = "Character",
-    Side = 2
-})
 
-MiscSection:Slider({
-    Name = "WalkSpeed",
-    Flag = "WalkSpeedSlider",
-    Min = 16,
-    Max = 120,
-    Default = 16,
-    Decimals = 0,
-    Suffix = " WS",
-    Callback = function(Value)
-        print("WalkSpeed:", Value)
-    end
-})
+-- ========================================================================
+-- VISUALS TAB
+-- ========================================================================
+local ESPSection = VisualsTab:Section({ Name = "ESP", Side = 1 })
+ESPSection:Toggle({ Name = "Enabled", Flag = "ESP_Enabled", Default = false, Callback = function(State) end })
+ESPSection:Toggle({ Name = "Boxes", Flag = "ESP_Boxes", Default = false, Callback = function(State) end }):Colorpicker({ Name = "Box Color", Flag = "ESP_BoxColor", Default = Color3.fromRGB(255, 255, 255), Callback = function(Color, Alpha) end })
+ESPSection:Toggle({ Name = "Names", Flag = "ESP_Names", Default = false, Callback = function(State) end })
 
-MiscSection:Button({
-    Name = "Print Hello",
-    Risky = false,
-    Callback = function()
-        Library:Notification("Hello from Avidbot!", 3, Color3.fromRGB(255, 105, 180))
-    end
-})
+local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
+ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value) end })
 
-local PlayersTab = Window:Page({
-    Name = "Players",
-    Columns = 1
-})
 
--- PlayerList must be on a page with 1 column
-PlayersTab:PlayerList()
-local SettingsTab = Window:Page({
-    Name = "Settings",
-    Columns = 2
-})
+-- ========================================================================
+-- MISC TAB
+-- ========================================================================
+local MovementSection = MiscTab:Section({ Name = "Movement", Side = 1 })
+MovementSection:Slider({ Name = "WalkSpeed", Flag = "Misc_WalkSpeed", Min = 16, Max = 150, Default = 16, Decimals = 0, Suffix = " WS", Callback = function(Value) end })
+MovementSection:Slider({ Name = "JumpPower", Flag = "Misc_JumpPower", Min = 50, Max = 200, Default = 50, Decimals = 0, Suffix = " JP", Callback = function(Value) end })
 
-local ConfigSection = SettingsTab:Section({
-    Name = "Configuration",
-    Side = 1
-})
+local ServerSection = MiscTab:Section({ Name = "Server", Side = 2 })
+ServerSection:Button({ Name = "Rejoin", Callback = function() end })
 
-local ConfigName = ConfigSection:Textbox({
-    Name = "Config Name",
-    Flag = "ConfigName",
-    Placeholder = "Enter name...",
-    Callback = function(Value) end
-})
+-- ========================================================================
+-- SETTINGS TAB
+-- ========================================================================
+local SettingsTab = Window:Page({ Name = "Settings", Columns = 2 })
+local ConfigSection = SettingsTab:Section({ Name = "Configuration", Side = 1 })
 
-local ConfigListbox = ConfigSection:Listbox({
-    Name = "Available Configs",
-    Flag = "ConfigList",
-    Items = {},
-    Size = 5,
-    Callback = function(Option) end
-})
+local ConfigName = ConfigSection:Textbox({ Name = "Config Name", Flag = "ConfigName", Placeholder = "Enter name...", Callback = function(Value) end })
+local ConfigListbox = ConfigSection:Listbox({ Name = "Available Configs", Flag = "ConfigList", Items = {}, Size = 5, Callback = function(Option) end })
 
 ConfigSection:Button({
     Name = "Save Config",
@@ -134,7 +86,7 @@ ConfigSection:Button({
         local name = Library.Flags["ConfigName"]
         if name == "" or name == nil then
             name = Library.Flags["ConfigList"]
-            if type(name) == "table" then name = name[1] end -- If multi-select is off, it might be a string or table depending on implementation
+            if type(name) == "table" then name = name[1] end
         end
         if name and name ~= "" then
             Library:LoadConfig(name)
@@ -166,12 +118,12 @@ ConfigSection:Button({
     end
 })
 
--- Initial load
 Library:RefreshConfigsList(ConfigListbox)
 
+-- UI Settings
+local MenuSection = SettingsTab:Section({ Name = "Menu", Side = 2 })
+MenuSection:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.RightShift, Callback = function(State) end })
+
 Library:Watermark("Avidbot | v1.0")
-
--- Library:Notification(Text, Duration, Color, {IconId, IconColor})
-Library:Notification("Successfully loaded Avidbot!", 5, Color3.fromRGB(255, 105, 180))
-
+Library:Notification("Successfully loaded Avidbot!", 5, Color3.fromRGB(150, 150, 255))
 Library:KeybindList()

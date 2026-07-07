@@ -47,6 +47,18 @@ end })
 LegitAimToggle:Keybind({ Name = "Aim Key", Flag = "Legit_AimKey", Mode = "Hold", Default = Enum.UserInputType.MouseButton2, Callback = function(State) end })
 LegitAimbot:Slider({ Name = "Smoothing", Flag = "Legit_Smooth", Min = 1, Max = 10, Default = 5, Decimals = 1, Callback = function(Value) end })
 
+LegitAimbot:Slider({ Name = "Hit Chance", Flag = "Legit_HitChance", Min = 0, Max = 100, Default = 65, Decimals = 0, Callback = function(Value)
+    _G.Avidbot_SilentAim.hitchance = Value
+end })
+
+LegitAimbot:Slider({ Name = "Miss Spread", Flag = "Legit_MissSpread", Min = 0, Max = 20, Default = 5, Decimals = 0, Callback = function(Value)
+    _G.Avidbot_SilentAim.missspread = Value
+end })
+
+LegitAimbot:Toggle({ Name = "Auto Shoot", Flag = "Legit_AutoShoot", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.autoshoot = State
+end })
+
 local LegitTriggerbot = LegitTab:Section({ Name = "Triggerbot", Side = 2 })
 local TriggerToggle = LegitTriggerbot:Toggle({ Name = "Enabled", Flag = "Legit_TriggerbotEnabled", Default = false, Callback = function(State) end })
 

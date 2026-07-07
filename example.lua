@@ -90,6 +90,84 @@ local PlayersTab = Window:Page({
 
 -- PlayerList must be on a page with 1 column
 PlayersTab:PlayerList()
+local SettingsTab = Window:Page({
+    Name = "Settings",
+    Columns = 2
+})
+
+local ConfigSection = SettingsTab:Section({
+    Name = "Configuration",
+    Side = 1
+})
+
+local ConfigName = ConfigSection:Textbox({
+    Name = "Config Name",
+    Flag = "ConfigName",
+    Placeholder = "Enter name...",
+    Callback = function(Value) end
+})
+
+local ConfigListbox = ConfigSection:Listbox({
+    Name = "Available Configs",
+    Flag = "ConfigList",
+    Items = {},
+    Size = 5,
+    Callback = function(Option) end
+})
+
+ConfigSection:Button({
+    Name = "Save Config",
+    Callback = function()
+        local name = Library.Flags["ConfigName"]
+        if name and name ~= "" then
+            Library:SaveConfig(name)
+            Library:RefreshConfigsList(ConfigListbox)
+        else
+            Library:Notification("Please enter a config name!", 3, Color3.fromRGB(255, 0, 0))
+        end
+    end
+})
+
+ConfigSection:Button({
+    Name = "Load Config",
+    Callback = function()
+        local name = Library.Flags["ConfigName"]
+        if name == "" or name == nil then
+            name = Library.Flags["ConfigList"]
+            if type(name) == "table" then name = name[1] end -- If multi-select is off, it might be a string or table depending on implementation
+        end
+        if name and name ~= "" then
+            Library:LoadConfig(name)
+        else
+            Library:Notification("Please select or enter a config!", 3, Color3.fromRGB(255, 0, 0))
+        end
+    end
+})
+
+ConfigSection:Button({
+    Name = "Delete Config",
+    Callback = function()
+        local name = Library.Flags["ConfigName"]
+        if name == "" or name == nil then
+            name = Library.Flags["ConfigList"]
+            if type(name) == "table" then name = name[1] end
+        end
+        if name and name ~= "" then
+            Library:DeleteConfig(name)
+            Library:RefreshConfigsList(ConfigListbox)
+        end
+    end
+})
+
+ConfigSection:Button({
+    Name = "Refresh Configs",
+    Callback = function()
+        Library:RefreshConfigsList(ConfigListbox)
+    end
+})
+
+-- Initial load
+Library:RefreshConfigsList(ConfigListbox)
 
 Library:Watermark("Supremacy Example | v1.0")
 

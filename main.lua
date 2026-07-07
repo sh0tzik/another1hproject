@@ -1702,6 +1702,14 @@ LegitAimbot:Slider({ Name = "Miss Spread", Flag = "Legit_MissSpread", Min = 0, M
     _G.Avidbot_SilentAim.missspread = Value
 end })
 
+LegitAimbot:Slider({ Name = "Field of View", Flag = "Legit_FOV", Min = 30, Max = 400, Default = 100, Decimals = 1, Callback = function(Value)
+    _G.Avidbot_SilentAim.fov = Value
+end })
+
+LegitAimbot:Toggle({ Name = "Show FOV Circle", Flag = "Legit_ShowFOV", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.showfov = State
+end })
+
 LegitAimbot:Toggle({ Name = "Auto Shoot", Flag = "Legit_AutoShoot", Default = false, Callback = function(State)
     _G.Avidbot_SilentAim.autoshoot = State
 end })
@@ -1730,12 +1738,6 @@ ChamsToggle:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", D
 ChamsToggle:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
 
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
-ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 1, Callback = function(Value)
-    _G.Avidbot_SilentAim.fov = Value
-end })
-ViewmodelSection:Toggle({ Name = "Show FOV Circle", Flag = "Visuals_ShowFOV", Default = false, Callback = function(State)
-    _G.Avidbot_SilentAim.showfov = State
-end })
 
 
 -- ========================================================================

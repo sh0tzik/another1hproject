@@ -67,9 +67,14 @@ local TriggerToggle = LegitTriggerbot:Toggle({ Name = "Enabled", Flag = "Legit_T
 -- VISUALS TAB
 -- ========================================================================
 local ESPSection = VisualsTab:Section({ Name = "ESP", Side = 1 })
-ESPSection:Toggle({ Name = "Enabled", Flag = "ESP_Enabled", Default = false, Callback = function(State) end })
+ESPSection:Toggle({ Name = "Enabled", Flag = "ESP_Enabled", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.esp = State
+end })
 ESPSection:Toggle({ Name = "Boxes", Flag = "ESP_Boxes", Default = false, Callback = function(State) end }):Colorpicker({ Name = "Box Color", Flag = "ESP_BoxColor", Default = Color3.fromRGB(255, 255, 255), Callback = function(Color, Alpha) end })
 ESPSection:Toggle({ Name = "Names", Flag = "ESP_Names", Default = false, Callback = function(State) end })
+ESPSection:Toggle({ Name = "C4 & Grabbables ESP", Flag = "ESP_Items", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.c4esp = State
+end })
 
 local ChamsSection = VisualsTab:Section({ Name = "Chams", Side = 1 })
 local ChamsToggle = ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_Enabled", Default = false, Callback = function(State) end })

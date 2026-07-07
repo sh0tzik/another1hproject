@@ -575,9 +575,22 @@ local Library do
 				BackgroundTransparency = 1,
 				AutoButtonColor = false,
                 Visible = true,
+                Visible = true,
                 Text = "",
                 ZIndex = 100
 			})
+
+            local ResizeIcon = Instances:Create("TextLabel", {
+                Parent = ResizeButton.Instance,
+                BackgroundTransparency = 1,
+                Size = UDim2New(1, 0, 1, 0),
+                Text = "◢",
+                TextSize = 12,
+                TextColor3 = FromRGB(150, 150, 150),
+                TextXAlignment = Enum.TextXAlignment.Right,
+                TextYAlignment = Enum.TextYAlignment.Bottom,
+                ZIndex = 100
+            })
 
             ResizeButton:Connect("InputBegan", function(Input)
                 if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
@@ -1471,7 +1484,7 @@ local Library do
                 end
 
                 if Data.Resizeable then
-                    Items["Outline"]:MakeResizeable(Data.MinimumSize or Vector2New(300, 300))
+                    Items["Outline"]:MakeResizeable(Data.MinimumSize or Vector2New(450, 400), Data.MaximumSize or Vector2New(1920, 1080))
                 end
 
                 Instances:Create("UIStroke", {

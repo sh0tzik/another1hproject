@@ -1526,26 +1526,19 @@ local Library do
                     AutoButtonColor = false,
                     BackgroundTransparency = 1,
                     Name = "\0",
-                    Size = UDim2New(0, 0, 1, -12),
-                    AutomaticSize = Enum.AutomaticSize.X,
+                    Size = UDim2New(1, -10, 0, 25),
                     BorderSizePixel = 0,
                     TextSize = 12,
                     BackgroundColor3 = FromRGB(255, 255, 255)
                 })  Items["Inactive"]:AddToTheme({TextColor3 = "Text"})
 
-                Instances:Create("UIPadding", {
-                    Parent = Items["Inactive"].Instance,
-                    PaddingLeft = UDimNew(0, 15),
-                    PaddingRight = UDimNew(0, 15)
-                })
-
                 Items["Liner"] = Instances:Create("Frame", {
                     Parent = Items["Inactive"].Instance,
                     BorderColor3 = FromRGB(0, 0, 0),
-                    AnchorPoint = Vector2New(0.5, 1),
+                    AnchorPoint = Vector2New(0, 0.5),
                     Name = "\0",
-                    Position = UDim2New(0.5, 0, 1, 0),
-                    Size = UDim2New(1, 0, 0, 2),
+                    Position = UDim2New(0, 0, 0.5, 0),
+                    Size = UDim2New(0, 2, 1, 0),
                     ZIndex = 2,
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(56, 56, 56)
@@ -1553,7 +1546,7 @@ local Library do
 
                 Instances:Create("UIGradient", {
                     Parent = Items["Liner"].Instance,
-                    Rotation = 90,
+                    Rotation = 0,
                     Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(125, 125, 125))}
                 }) 
 
@@ -1566,18 +1559,18 @@ local Library do
                 Items["Glow"] = Instances:Create("Frame", {
                     Parent = Items["Inactive"].Instance,
                     BorderColor3 = FromRGB(0, 0, 0),
-                    AnchorPoint = Vector2New(0.5, 1),
+                    AnchorPoint = Vector2New(0, 0.5),
                     BackgroundTransparency = 1,
-                    Position = UDim2New(0.5, 0, 1, 0),
+                    Position = UDim2New(0, 0, 0.5, 0),
                     Name = "\0",
-                    Size = UDim2New(1, 2, 0, 0),
+                    Size = UDim2New(0, 0, 1, 2),
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(31, 226, 130)
                 })  Items["Glow"]:AddToTheme({BackgroundColor3 = "Accent"})
 
                 Instances:Create("UIGradient", {
                     Parent = Items["Glow"].Instance,
-                    Rotation = -90,
+                    Rotation = 0,
                     Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(0.074, 0.6937500238418579), NumSequenceKeypoint(0.354, 0.90625), NumSequenceKeypoint(1, 1)}
                 }) 
 
@@ -1661,14 +1654,14 @@ local Library do
 
                     Items["Inactive"]:Tween(nil, {TextColor3 = Library.Theme.Accent})
                     Items["Liner"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
-                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 0, Size = UDim2New(1, 2, 1, 0)})
+                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 0, Size = UDim2New(1, 0, 1, 2)})
                 else
                     Items["Inactive"]:ChangeItemTheme({TextColor3 = "Text"})
                     Items["Liner"]:ChangeItemTheme({BackgroundColor3 = "Dark Liner"})
 
                     Items["Inactive"]:Tween(nil, {TextColor3 = Library.Theme.Text})
                     Items["Liner"]:Tween(nil, {BackgroundColor3 = Library.Theme["Dark Liner"]})
-                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 1, Size = UDim2New(1, 2, 0, 0)})
+                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 1, Size = UDim2New(0, 0, 1, 2)})
                 end
             end
 
@@ -4208,7 +4201,7 @@ local Library do
                 Name = "\0",
                 Position = UDim2New(0, 13, 0, 20),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, -26, 0, 37),
+                Size = UDim2New(0, 120, 1, -33),
                 BorderSizePixel = 2,
                 BackgroundColor3 = FromRGB(13, 13, 13)
             })  Items["Pages"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
@@ -4224,17 +4217,18 @@ local Library do
                 Parent = Items["Pages"].Instance,
                 Name = "\0",
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 13, 0, 0),
+                Position = UDim2New(0, 0, 0, 13),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, -26, 1, 0),
+                Size = UDim2New(1, 0, 1, -26),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             }) 
 
             Instances:Create("UIListLayout", {
                 Parent = Items["RealHolder"].Instance,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-                FillDirection = Enum.FillDirection.Horizontal,
+                VerticalAlignment = Enum.VerticalAlignment.Top,
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                FillDirection = Enum.FillDirection.Vertical,
                 Padding = UDimNew(0, 5),
                 SortOrder = Enum.SortOrder.LayoutOrder
             }) 
@@ -4242,9 +4236,9 @@ local Library do
             Items["Content"] = Instances:Create("Frame", {
                 Parent = Items["Inline"].Instance,
                 Name = "\0",
-                Position = UDim2New(0, 13, 0, 77),
+                Position = UDim2New(0, 146, 0, 20),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, -28, 1, -93),
+                Size = UDim2New(1, -159, 1, -33),
                 BorderSizePixel = 2,
                 BackgroundColor3 = FromRGB(12, 12, 12)
             })  Items["Content"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})

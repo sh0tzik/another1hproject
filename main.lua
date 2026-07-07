@@ -44,6 +44,12 @@ ESPSection:Toggle({ Name = "Enabled", Flag = "ESP_Enabled", Default = false, Cal
 ESPSection:Toggle({ Name = "Boxes", Flag = "ESP_Boxes", Default = false, Callback = function(State) end }):Colorpicker({ Name = "Box Color", Flag = "ESP_BoxColor", Default = Color3.fromRGB(255, 255, 255), Callback = function(Color, Alpha) end })
 ESPSection:Toggle({ Name = "Names", Flag = "ESP_Names", Default = false, Callback = function(State) end })
 
+local ChamsSection = VisualsTab:Section({ Name = "Chams", Side = 1 })
+ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_Enabled", Default = false, Callback = function(State) end })
+ChamsSection:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", Default = Color3.fromRGB(0, 255, 0), Callback = function() end })
+ChamsSection:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
+ChamsSection:Slider({ Name = "Transparency", Flag = "Chams_Transparency", Min = 0, Max = 100, Default = 50, Decimals = 0, Suffix = "%", Callback = function() end })
+
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
 ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value) end })
 
@@ -127,3 +133,94 @@ MenuSection:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle"
 Library:Watermark("Avidbot | v1.0")
 Library:Notification("Successfully loaded Avidbot!", 5, Color3.fromRGB(150, 150, 255))
 Library:KeybindList()
+
+-- ========================================================================
+-- CHAMS LOGIC
+-- ========================================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local ChamsFolder = Instance.new("Folder")
+ChamsFolder.Name = "Avidbot_Chams"
+local success = pcall(function() ChamsFolder.Parent = CoreGui end)
+if not success then ChamsFolder.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+local Adornments = {}
+
+local function GetAdornment(player, part)
+    if not Adornments[player] then Adornments[player] = {} end
+    if not Adornments[player][part] then
+        local box = Instance.new("BoxHandleAdornment")
+        box.Name = part.Name
+        box.AlwaysOnTop = true
+        box.ZIndex = 5
+        box.Adornee = part
+        box.Size = part.Size + Vector3.new(0.05, 0.05, 0.05) -- Slightly larger to avoid clipping
+        box.Parent = ChamsFolder
+        Adornments[player][part] = box
+    end
+    return Adornments[player][part]
+end
+
+local function ClearAdornments(player)
+    if Adornments[player] then
+        for part, box in pairs(Adornments[player]) do
+            box:Destroy()
+        end
+        Adornments[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    local enabled = Library.Flags["Chams_Enabled"]
+    local visColor = Library.Flags["Chams_VisibleColor"] or Color3.fromRGB(0, 255, 0)
+    local hidColor = Library.Flags["Chams_HiddenColor"] or Color3.fromRGB(255, 0, 0)
+    local transparency = (Library.Flags["Chams_Transparency"] or 50) / 100
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local character = player.Character
+            if enabled and character and character:FindFirstChild("Humanoid") and character.Humanoid.Health > 0 then
+                local myChar = LocalPlayer.Character
+                local rayParams = RaycastParams.new()
+                rayParams.FilterType = Enum.RaycastFilterType.Exclude
+                rayParams.FilterDescendantsInstances = {myChar, character, Camera}
+
+                for _, part in pairs(character:GetChildren()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        local box = GetAdornment(player, part)
+                        box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
+                        box.Transparency = transparency
+
+                        local origin = Camera.CFrame.Position
+                        local direction = (part.Position - origin)
+                        local rayResult = workspace:Raycast(origin, direction, rayParams)
+
+                        if rayResult then
+                            box.Color3 = hidColor
+                        else
+                            box.Color3 = visColor
+                        end
+                    end
+                end
+                
+                -- Clean up destroyed parts
+                for part, box in pairs(Adornments[player]) do
+                    if not part.Parent then
+                        box:Destroy()
+                        Adornments[player][part] = nil
+                    end
+                end
+            else
+                ClearAdornments(player)
+            end
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    ClearAdornments(player)
+end)

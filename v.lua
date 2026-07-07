@@ -18,7 +18,7 @@ local guardsTeam = Teams:FindFirstChild("Guards")
 local inmatesTeam = Teams:FindFirstChild("Inmates")
 local criminalsTeam = Teams:FindFirstChild("Criminals")
 
-local cfg = {
+_G.Avidbot_SilentAim = _G.Avidbot_SilentAim or {
     enabled = true, -- toggle the whole script on/off
     teamcheck = true, -- dont shoot people on your team
     wallcheck = true, -- dont shoot through walls
@@ -121,7 +121,7 @@ local targetSwitchTime = 0
 local currentStickiness = 0
 local randomPartCache = {}
 local lastTouchAimPos = nil
-local storedAimMaxDistanceBeforeDistanceHitchance = tonumber(cfg.aimmaxdist) or 0
+local storedAimMaxDistanceBeforeDistanceHitchance = tonumber(_G.Avidbot_SilentAim.aimmaxdist) or 0
 local distanceHitchanceForcesAimMaxDistance = false
 local activeTouch = nil
 local lastAutoShoot = 0
@@ -149,12 +149,12 @@ end
 
 local fovCircle = Drawing.new("Circle")
 fovCircle.Color = Color3.fromRGB(255, 0, 0)
-fovCircle.Radius = cfg.fov
+fovCircle.Radius = _G.Avidbot_SilentAim.fov
 fovCircle.Transparency = 0.8
 fovCircle.Filled = false
 fovCircle.NumSides = 64
 fovCircle.Thickness = 1
-fovCircle.Visible = cfg.showfov and cfg.enabled
+fovCircle.Visible = _G.Avidbot_SilentAim.showfov and _G.Avidbot_SilentAim.enabled
 
 local targetLine = Drawing.new("Line")
 targetLine.Color = Color3.fromRGB(0, 255, 0)
@@ -266,7 +266,7 @@ local function getScreenCenter(camera)
 end
 
 local function getFovScreenPosition(camera)
-    if cfg.staticfov then
+    if _G.Avidbot_SilentAim.staticfov then
         return getScreenCenter(camera)
     end
     return getAimScreenPosition(camera)
@@ -297,7 +297,7 @@ local function gunMatchesAutoShootWeapon(gun)
         return false
     end
     
-    local selector = normalizeWeaponSelector(cfg.autoshootweapon)
+    local selector = normalizeWeaponSelector(_G.Avidbot_SilentAim.autoshootweapon)
     if selector == "" or selector == "any" or selector == "all" then
         return true
     end
@@ -328,7 +328,7 @@ local function getLocalAimOriginPart()
 end
 
 local function isWithinAimDistance(targetPos)
-    local maxDistance = tonumber(cfg.aimmaxdist) or 0
+    local maxDistance = tonumber(_G.Avidbot_SilentAim.aimmaxdist) or 0
     if maxDistance <= 0 or not targetPos then
         return true
     end
@@ -342,17 +342,17 @@ local function isWithinAimDistance(targetPos)
 end
 
 local function syncDistanceHitchanceAimMaxDistance()
-    local currentAimMaxDistance = tonumber(cfg.aimmaxdist) or 0
-    if cfg.distancebasedhitchance then
+    local currentAimMaxDistance = tonumber(_G.Avidbot_SilentAim.aimmaxdist) or 0
+    if _G.Avidbot_SilentAim.distancebasedhitchance then
         if currentAimMaxDistance > 0 then
             storedAimMaxDistanceBeforeDistanceHitchance = currentAimMaxDistance
         elseif storedAimMaxDistanceBeforeDistanceHitchance <= 0 then
             storedAimMaxDistanceBeforeDistanceHitchance = 100
         end
-        cfg.aimmaxdist = 0
+        _G.Avidbot_SilentAim.aimmaxdist = 0
         distanceHitchanceForcesAimMaxDistance = true
     elseif distanceHitchanceForcesAimMaxDistance then
-        cfg.aimmaxdist = tonumber(storedAimMaxDistanceBeforeDistanceHitchance) or 0
+        _G.Avidbot_SilentAim.aimmaxdist = tonumber(storedAimMaxDistanceBeforeDistanceHitchance) or 0
         distanceHitchanceForcesAimMaxDistance = false
     else
         storedAimMaxDistanceBeforeDistanceHitchance = currentAimMaxDistance
@@ -360,7 +360,7 @@ local function syncDistanceHitchanceAimMaxDistance()
 end
 
 local function shouldBypassHitchance(gun)
-    return gun ~= nil and cfg.hitchanceAutoOnly and not isAutomaticWeapon(gun)
+    return gun ~= nil and _G.Avidbot_SilentAim.hitchanceAutoOnly and not isAutomaticWeapon(gun)
 end
 
 local function getLocalHumanoid()
@@ -410,16 +410,16 @@ local function isSupportedGrabbable(obj)
 end
 
 local function shouldAutoGrabItem(obj)
-    if not cfg.autograb or not obj or not obj:IsA("Model") then
+    if not _G.Avidbot_SilentAim.autograb or not obj or not obj:IsA("Model") then
         return false
     end
     
     local name = obj.Name:lower()
     if name:find("keycard", 1, true) ~= nil then
-        return cfg.autograbkeycard
+        return _G.Avidbot_SilentAim.autograbkeycard
     end
     if name == "m9" then
-        return cfg.autograbm9
+        return _G.Avidbot_SilentAim.autograbm9
     end
     
     return false
@@ -463,7 +463,7 @@ local function untrackGrabbable(obj)
 end
 
 local function updateAutoGrab(now)
-    if not cfg.autograb or not giverPressedRemote then
+    if not _G.Avidbot_SilentAim.autograb or not giverPressedRemote then
         return
     end
     if now - lastAutoGrab < 0.05 then
@@ -475,12 +475,12 @@ local function updateAutoGrab(now)
         return
     end
     
-    local grabDistance = math.clamp(tonumber(cfg.autograbdistance) or 0, 0, 12)
+    local grabDistance = math.clamp(tonumber(_G.Avidbot_SilentAim.autograbdistance) or 0, 0, 12)
     if grabDistance <= 0 then
         return
     end
     
-    local requiredDelay = math.max(tonumber(cfg.autograbdelay) or 0, 0)
+    local requiredDelay = math.max(tonumber(_G.Avidbot_SilentAim.autograbdelay) or 0, 0)
     local grabDistanceSq = grabDistance * grabDistance
     
     for item in pairs(trackedGrabbables) do
@@ -580,7 +580,7 @@ local function makeEsp(player)
     
     local diamond = Instance.new("Frame")
     diamond.Name = "Diamond"
-    diamond.BackgroundColor3 = cfg.espcolor
+    diamond.BackgroundColor3 = _G.Avidbot_SilentAim.espcolor
     diamond.BorderSizePixel = 0
     diamond.Size = UDim2.new(0, 10, 0, 10)
     diamond.Position = UDim2.new(0.5, -5, 0.5, -5)
@@ -652,32 +652,32 @@ local function shouldShowEsp(player)
     if not myHrp then return false end
     
     local distance = (hrp.Position - myHrp.Position).Magnitude
-    local espMaxDistance = tonumber(cfg.espmaxdist) or 0
+    local espMaxDistance = tonumber(_G.Avidbot_SilentAim.espmaxdist) or 0
     if espMaxDistance > 0 and distance > espMaxDistance then return false end
     
     local myTeam = LocalPlayer.Team
     local theirTeam = player.Team
     
     if theirTeam == myTeam then
-        if not cfg.espshowteam then return false end
+        if not _G.Avidbot_SilentAim.espshowteam then return false end
         return true
     end
     
-    if cfg.espteamcheck then
+    if _G.Avidbot_SilentAim.espteamcheck then
         local imCrimOrInmate = (myTeam == criminalsTeam or myTeam == inmatesTeam)
         local theyCrimOrInmate = (theirTeam == criminalsTeam or theirTeam == inmatesTeam)
         if imCrimOrInmate and theyCrimOrInmate then return false end
     end
     
-    if theirTeam == guardsTeam then return cfg.esptargets.guards
-    elseif theirTeam == inmatesTeam then return cfg.esptargets.inmates
-    elseif theirTeam == criminalsTeam then return cfg.esptargets.criminals end
+    if theirTeam == guardsTeam then return _G.Avidbot_SilentAim.esptargets.guards
+    elseif theirTeam == inmatesTeam then return _G.Avidbot_SilentAim.esptargets.inmates
+    elseif theirTeam == criminalsTeam then return _G.Avidbot_SilentAim.esptargets.criminals end
     
     return false
 end
 
 local function updateEsp()
-    if not cfg.esp or not visuals.container then
+    if not _G.Avidbot_SilentAim.esp or not visuals.container then
         for _, e in pairs(espCache) do e.Parent = nil end
         return
     end
@@ -699,16 +699,16 @@ local function updateEsp()
                 esp.Parent = visuals.container
                 
                 local d = esp:FindFirstChild("Diamond")
-                if d and cfg.espuseteamcolors then
+                if d and _G.Avidbot_SilentAim.espuseteamcolors then
                     local t = player.Team
-                    if t == LocalPlayer.Team then d.BackgroundColor3 = cfg.espteam
-                    elseif t == guardsTeam then d.BackgroundColor3 = cfg.espguards
-                    elseif t == inmatesTeam then d.BackgroundColor3 = cfg.espinmates
-                    elseif t == criminalsTeam then d.BackgroundColor3 = cfg.espcriminals
-                    else d.BackgroundColor3 = cfg.espcolor end
+                    if t == LocalPlayer.Team then d.BackgroundColor3 = _G.Avidbot_SilentAim.espteam
+                    elseif t == guardsTeam then d.BackgroundColor3 = _G.Avidbot_SilentAim.espguards
+                    elseif t == inmatesTeam then d.BackgroundColor3 = _G.Avidbot_SilentAim.espinmates
+                    elseif t == criminalsTeam then d.BackgroundColor3 = _G.Avidbot_SilentAim.espcriminals
+                    else d.BackgroundColor3 = _G.Avidbot_SilentAim.espcolor end
                 end
                 
-                if cfg.espshowdist and myHrp then
+                if _G.Avidbot_SilentAim.espshowdist and myHrp then
                     local label = esp:FindFirstChild("DistanceLabel")
                     if label then
                         label.Text = math.floor((hrp.Position - myHrp.Position).Magnitude) .. "m"
@@ -742,7 +742,7 @@ local function makeC4Esp(c4Part)
     
     local icon = Instance.new("Frame")
     icon.Name = "Icon"
-    icon.BackgroundColor3 = cfg.c4espcolor
+    icon.BackgroundColor3 = _G.Avidbot_SilentAim.c4espcolor
     icon.BorderSizePixel = 0
     icon.Size = UDim2.new(0, 14, 0, 14)
     icon.Position = UDim2.new(0.5, -7, 0.5, -7)
@@ -775,7 +775,7 @@ local function makeC4Esp(c4Part)
     distLabel.Position = UDim2.new(0.5, -30, 1, 16)
     distLabel.Font = Enum.Font.GothamBold
     distLabel.TextSize = 10
-    distLabel.TextColor3 = cfg.c4espcolor
+    distLabel.TextColor3 = _G.Avidbot_SilentAim.c4espcolor
     distLabel.TextStrokeTransparency = 0.5
     distLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
     distLabel.Text = ""
@@ -819,7 +819,7 @@ workspace.DescendantAdded:Connect(trackGrabbable)
 workspace.DescendantRemoving:Connect(untrackGrabbable)
 
 local function updateC4Esp()
-    if not cfg.c4esp or not visuals.container then
+    if not _G.Avidbot_SilentAim.c4esp or not visuals.container then
         for _, e in pairs(c4espCache) do e.Parent = nil end
         return
     end
@@ -834,13 +834,13 @@ local function updateC4Esp()
                 dist = (part.Position - myHrp.Position).Magnitude
             end
             
-            local c4MaxDistance = tonumber(cfg.c4espmaxdist) or 0
+            local c4MaxDistance = tonumber(_G.Avidbot_SilentAim.c4espmaxdist) or 0
             if c4MaxDistance <= 0 or dist <= c4MaxDistance then
                 local esp = makeC4Esp(part)
                 esp.Adornee = part
                 esp.Parent = visuals.container
                 
-                if cfg.c4espshowdist and myHrp then
+                if _G.Avidbot_SilentAim.c4espshowdist and myHrp then
                     local distLabel = esp:FindFirstChild("DistLabel")
                     if distLabel then
                         distLabel.Text = math.floor(dist) .. "m"
@@ -909,7 +909,7 @@ local function getTargetPart(char)
         return getTaserTargetPart(char)
     end
     
-    if cfg.shieldbreaker then
+    if _G.Avidbot_SilentAim.shieldbreaker then
         local shield = char:FindFirstChild("RiotShieldPart")
         if shield and shield:IsA("BasePart") then
             local hp = shield:GetAttribute("Health")
@@ -923,8 +923,8 @@ local function getTargetPart(char)
                     local theirLook = theirHrp.CFrame.LookVector
                     local dot = toMe:Dot(theirLook)
                     
-                    if dot > cfg.shieldfrontangle then
-                        if cfg.shieldrandomhead and rng:NextInteger(1, 100) <= cfg.shieldheadchance then
+                    if dot > _G.Avidbot_SilentAim.shieldfrontangle then
+                        if _G.Avidbot_SilentAim.shieldrandomhead and rng:NextInteger(1, 100) <= _G.Avidbot_SilentAim.shieldheadchance then
                             return getPart(char, "Head")
                         end
                         return shield
@@ -935,20 +935,20 @@ local function getTargetPart(char)
     end
     
     local partName
-    if cfg.randomparts then
+    if _G.Avidbot_SilentAim.randomparts then
         local cached = randomPartCache[char]
         if cached and cached.part and cached.part.Parent == char and cached.expiresAt > os.clock() then
             return cached.part
         end
         
-        local list = cfg.partslist
+        local list = _G.Avidbot_SilentAim.partslist
         partName = (list and #list > 0) and list[rng:NextInteger(1, #list)] or "Head"
     else
-        partName = cfg.aimpart
+        partName = _G.Avidbot_SilentAim.aimpart
     end
     
     local part = getPart(char, partName)
-    if cfg.randomparts and part then
+    if _G.Avidbot_SilentAim.randomparts and part then
         randomPartCache[char] = {
             part = part,
             partName = partName,
@@ -969,7 +969,7 @@ local function isStanding(player)
     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
     if not hrp then return false end
     local vel = hrp.AssemblyLinearVelocity
-    return Vector2.new(vel.X, vel.Z).Magnitude <= cfg.stillthreshold
+    return Vector2.new(vel.X, vel.Z).Magnitude <= _G.Avidbot_SilentAim.stillthreshold
 end
 
 local function hasForceField(player)
@@ -1022,34 +1022,34 @@ local function quickCheck(player)
     if not targetPart then return false end
     if not isWithinAimDistance(targetPart.Position) then return false end
     if not isInCurrentGunRange(targetPart.Position) then return false end
-    if cfg.deathcheck and isDead(player) then return false end
-    if cfg.ffcheck and hasForceField(player) then return false end
-    if cfg.vehiclecheck and isInVehicle(player) then return false end
-    if cfg.teamcheck and player.Team == LocalPlayer.Team then return false end
-    if cfg.criminalsnoinnmates then
+    if _G.Avidbot_SilentAim.deathcheck and isDead(player) then return false end
+    if _G.Avidbot_SilentAim.ffcheck and hasForceField(player) then return false end
+    if _G.Avidbot_SilentAim.vehiclecheck and isInVehicle(player) then return false end
+    if _G.Avidbot_SilentAim.teamcheck and player.Team == LocalPlayer.Team then return false end
+    if _G.Avidbot_SilentAim.criminalsnoinnmates then
         if LocalPlayer.Team == criminalsTeam and player.Team == inmatesTeam then return false end
     end
-    if cfg.inmatesnocriminals then
+    if _G.Avidbot_SilentAim.inmatesnocriminals then
         if LocalPlayer.Team == inmatesTeam and player.Team == criminalsTeam then return false end
     end
     
-    if cfg.hostilecheck or cfg.trespasscheck then
+    if _G.Avidbot_SilentAim.hostilecheck or _G.Avidbot_SilentAim.trespasscheck then
         local isTaser = isTaserGun(currentGun)
-        local bypassHostile = cfg.taserbypasshostile and isTaser
-        local bypassTrespass = cfg.taserbypasstrespass and isTaser
+        local bypassHostile = _G.Avidbot_SilentAim.taserbypasshostile and isTaser
+        local bypassTrespass = _G.Avidbot_SilentAim.taserbypasstrespass and isTaser
         local targetChar = player.Character
         
         if LocalPlayer.Team == guardsTeam and player.Team == inmatesTeam then
             local hostile = targetChar:GetAttribute("Hostile")
             local trespass = targetChar:GetAttribute("Trespassing")
             
-            if cfg.hostilecheck and cfg.trespasscheck then
+            if _G.Avidbot_SilentAim.hostilecheck and _G.Avidbot_SilentAim.trespasscheck then
                 if not bypassHostile and not bypassTrespass then
                     if not hostile and not trespass then return false end
                 end
-            elseif cfg.hostilecheck and not bypassHostile then
+            elseif _G.Avidbot_SilentAim.hostilecheck and not bypassHostile then
                 if not hostile then return false end
-            elseif cfg.trespasscheck and not bypassTrespass then
+            elseif _G.Avidbot_SilentAim.trespasscheck and not bypassTrespass then
                 if not trespass then return false end
             end
         end
@@ -1060,7 +1060,7 @@ end
 local function fullCheck(player)
     if not quickCheck(player) then return false end
     
-    if cfg.wallcheck then
+    if _G.Avidbot_SilentAim.wallcheck then
         local myChar = LocalPlayer.Character
         local myHead = myChar and myChar:FindFirstChild("Head")
         local targetPart = getTargetPart(player.Character)
@@ -1075,7 +1075,7 @@ end
 
 local function rollHit(chanceOverride)
     lastShotTime = os.clock()
-    local chance = math.clamp(tonumber(chanceOverride) or tonumber(cfg.hitchance) or 0, 0, 100)
+    local chance = math.clamp(tonumber(chanceOverride) or tonumber(_G.Avidbot_SilentAim.hitchance) or 0, 0, 100)
     if chance >= 100 then
         lastShotResult = true
     elseif chance <= 0 then
@@ -1087,8 +1087,8 @@ local function rollHit(chanceOverride)
 end
 
 local function getDistanceBasedHitChance(targetPart, originPos)
-    local baseChance = math.clamp(tonumber(cfg.hitchance) or 0, 0, 100)
-    if not cfg.distancebasedhitchance then
+    local baseChance = math.clamp(tonumber(_G.Avidbot_SilentAim.hitchance) or 0, 0, 100)
+    if not _G.Avidbot_SilentAim.distancebasedhitchance then
         return baseChance
     end
     if not targetPart then
@@ -1105,11 +1105,11 @@ local function getDistanceBasedHitChance(targetPart, originPos)
     local distance = (targetPart.Position - origin).Magnitude
     local selectedChance = baseChance
     local points = {
-        {distance = math.max(tonumber(cfg.distancehitchance1dist) or 0, 0), chance = math.clamp(tonumber(cfg.distancehitchance1value) or baseChance, 0, 100)},
-        {distance = math.max(tonumber(cfg.distancehitchance2dist) or 0, 0), chance = math.clamp(tonumber(cfg.distancehitchance2value) or baseChance, 0, 100)},
-        {distance = math.max(tonumber(cfg.distancehitchance3dist) or 0, 0), chance = math.clamp(tonumber(cfg.distancehitchance3value) or baseChance, 0, 100)},
-        {distance = math.max(tonumber(cfg.distancehitchance4dist) or 0, 0), chance = math.clamp(tonumber(cfg.distancehitchance4value) or baseChance, 0, 100)},
-        {distance = math.max(tonumber(cfg.distancehitchance5dist) or 0, 0), chance = math.clamp(tonumber(cfg.distancehitchance5value) or baseChance, 0, 100)}
+        {distance = math.max(tonumber(_G.Avidbot_SilentAim.distancehitchance1dist) or 0, 0), chance = math.clamp(tonumber(_G.Avidbot_SilentAim.distancehitchance1value) or baseChance, 0, 100)},
+        {distance = math.max(tonumber(_G.Avidbot_SilentAim.distancehitchance2dist) or 0, 0), chance = math.clamp(tonumber(_G.Avidbot_SilentAim.distancehitchance2value) or baseChance, 0, 100)},
+        {distance = math.max(tonumber(_G.Avidbot_SilentAim.distancehitchance3dist) or 0, 0), chance = math.clamp(tonumber(_G.Avidbot_SilentAim.distancehitchance3value) or baseChance, 0, 100)},
+        {distance = math.max(tonumber(_G.Avidbot_SilentAim.distancehitchance4dist) or 0, 0), chance = math.clamp(tonumber(_G.Avidbot_SilentAim.distancehitchance4value) or baseChance, 0, 100)},
+        {distance = math.max(tonumber(_G.Avidbot_SilentAim.distancehitchance5dist) or 0, 0), chance = math.clamp(tonumber(_G.Avidbot_SilentAim.distancehitchance5value) or baseChance, 0, 100)}
     }
     table.sort(points, function(a, b)
         return a.distance < b.distance
@@ -1129,7 +1129,7 @@ local function getMissPos(startPos, targetPartOrPos)
     
     local toTarget = targetPos - startPos
     if toTarget.Magnitude <= 0.001 then
-        return targetPos + Vector3.new(cfg.missspread + 6, 0, 0)
+        return targetPos + Vector3.new(_G.Avidbot_SilentAim.missspread + 6, 0, 0)
     end
     
     local direction = toTarget.Unit
@@ -1149,14 +1149,14 @@ local function getMissPos(startPos, targetPartOrPos)
     end
     
     local partRadius = targetPart and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) * 0.75 or 2
-    local missRadius = math.max(cfg.missspread, partRadius + 3)
+    local missRadius = math.max(_G.Avidbot_SilentAim.missspread, partRadius + 3)
     local angle = rng:NextNumber(0, math.pi * 2)
     local offset = right * math.cos(angle) * missRadius + up * math.sin(angle) * missRadius
     return targetPos + offset
 end
 
 local function getFovTargetPriority(player)
-    if not cfg.prioritizecriminals then
+    if not _G.Avidbot_SilentAim.prioritizecriminals then
         return 0
     end
     if player.Team == criminalsTeam then
@@ -1169,7 +1169,7 @@ local function getFovTargetPriority(player)
 end
 
 local function getClosest(fovRadius)
-    fovRadius = fovRadius or cfg.fov
+    fovRadius = fovRadius or _G.Avidbot_SilentAim.fov
     local camera = workspace.CurrentCamera
     if not camera then return nil, nil end
     
@@ -1177,7 +1177,7 @@ local function getClosest(fovRadius)
     
     local now = os.clock()
     
-    if cfg.targetstickiness and currentTarget and (now - targetSwitchTime) < currentStickiness then
+    if _G.Avidbot_SilentAim.targetstickiness and currentTarget and (now - targetSwitchTime) < currentStickiness then
         if fullCheck(currentTarget) then
             local part = getTargetPart(currentTarget.Character)
             if part then
@@ -1214,7 +1214,7 @@ local function getClosest(fovRadius)
         end
     end
     
-    if cfg.prioritizeclosest then
+    if _G.Avidbot_SilentAim.prioritizeclosest then
         table.sort(candidates, function(a, b)
             if a.priority ~= b.priority then
                 return a.priority < b.priority
@@ -1252,10 +1252,10 @@ local function getClosest(fovRadius)
             if candidate.player ~= currentTarget then
                 currentTarget = candidate.player
                 targetSwitchTime = now
-                if cfg.targetstickinessrandom then
-                    currentStickiness = rng:NextNumber(cfg.targetstickinessmin, cfg.targetstickinessmax)
+                if _G.Avidbot_SilentAim.targetstickinessrandom then
+                    currentStickiness = rng:NextNumber(_G.Avidbot_SilentAim.targetstickinessmin, _G.Avidbot_SilentAim.targetstickinessmax)
                 else
-                    currentStickiness = cfg.targetstickinessduration
+                    currentStickiness = _G.Avidbot_SilentAim.targetstickinessduration
                 end
             end
             return candidate.player, part.Position
@@ -1337,7 +1337,7 @@ end
 
 local function autoShoot()
     local gun = currentGun
-    if not cfg.autoshoot or not cfg.enabled or not gun then return end
+    if not _G.Avidbot_SilentAim.autoshoot or not _G.Avidbot_SilentAim.enabled or not gun then return end
     if gun.Parent ~= LocalPlayer.Character then return end
     if not gunMatchesAutoShootWeapon(gun) then
         lastAutoTarget = nil
@@ -1349,7 +1349,7 @@ local function autoShoot()
     if reloadSession ~= 0 or gun:GetAttribute("Local_IsShooting") then return end
     if not isSniperStable(gun) then return end
     
-    local fireRate = math.max(gun:GetAttribute("FireRate") or 0, cfg.autoshootdelay)
+    local fireRate = math.max(gun:GetAttribute("FireRate") or 0, _G.Avidbot_SilentAim.autoshootdelay)
     if now - lastAutoShoot < fireRate then return end
     
     local myChar = LocalPlayer.Character
@@ -1360,7 +1360,7 @@ local function autoShoot()
     local muzzle = gun:FindFirstChild("Muzzle")
     local startPos = muzzle and muzzle.Position or myHead.Position
     
-    local target, targetPos = getClosest(cfg.fov)
+    local target, targetPos = getClosest(_G.Avidbot_SilentAim.fov)
     if not target or not fullCheck(target) then 
         lastAutoTarget = nil
         return 
@@ -1371,7 +1371,7 @@ local function autoShoot()
         lastAutoTarget = target
     end
     
-    local acquireDelay = shouldUseInstantAcquireDelay(gun) and 0 or cfg.autoshootstartdelay
+    local acquireDelay = shouldUseInstantAcquireDelay(gun) and 0 or _G.Avidbot_SilentAim.autoshootstartdelay
     local requiredDelay = math.max(acquireDelay, gun:GetAttribute("ChargeTime") or 0)
     if now - targetAcquiredTime < requiredDelay then return end
     
@@ -1396,9 +1396,9 @@ local function autoShoot()
     local shotgun = isShotgun(gun)
     local shouldHit = false
     
-    if cfg.taseralwayshit and isTaser then
+    if _G.Avidbot_SilentAim.taseralwayshit and isTaser then
         shouldHit = true
-    elseif cfg.ifplayerstill and isStanding(target) then
+    elseif _G.Avidbot_SilentAim.ifplayerstill and isStanding(target) then
         shouldHit = true
     elseif shouldBypassHitchance(gun) then
         shouldHit = true
@@ -1414,7 +1414,7 @@ local function autoShoot()
         if shouldHit then
             aimPoint = targetPart.Position
         else
-            if cfg.missspread > 0 then
+            if _G.Avidbot_SilentAim.missspread > 0 then
                 aimPoint = getMissPos(startPos, targetPart)
             else
                 return
@@ -1429,7 +1429,7 @@ local function autoShoot()
                 local simulatedHit, simulatedPos = simulateProjectileImpact(startPos, aimPoint, gun)
                 finalPos = simulatedPos
                 hitPart = simulatedHit or targetPart
-            elseif shotgun and cfg.shotgunnaturalspread then
+            elseif shotgun and _G.Avidbot_SilentAim.shotgunnaturalspread then
                 local simulatedHit, simulatedPos = simulateProjectileImpact(startPos, aimPoint, gun)
                 finalPos = simulatedPos
                 hitPart = simulatedHit or targetPart
@@ -1511,10 +1511,10 @@ RunService.PreRender:Connect(function()
     local fovPos = getFovScreenPosition(camera)
     
     fovCircle.Position = fovPos
-    fovCircle.Radius = cfg.fov
-    fovCircle.Visible = cfg.showfov and cfg.enabled
+    fovCircle.Radius = _G.Avidbot_SilentAim.fov
+    fovCircle.Visible = _G.Avidbot_SilentAim.showfov and _G.Avidbot_SilentAim.enabled
     
-    if cfg.showtargetline and cfg.enabled then
+    if _G.Avidbot_SilentAim.showtargetline and _G.Avidbot_SilentAim.enabled then
         local target, targetPos = getClosest()
         if target and targetPos and camera then
             local screenPos, onScreen = camera:WorldToViewportPoint(targetPos)
@@ -1538,15 +1538,15 @@ end)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.KeyCode == cfg.togglekey then
-        cfg.enabled = not cfg.enabled
-        notify("Silent Aim", "Enabled: " .. tostring(cfg.enabled), 3)
-    elseif input.KeyCode == cfg.esptoggle then
-        cfg.esp = not cfg.esp
-        notify("ESP", "Enabled: " .. tostring(cfg.esp), 3)
-    elseif input.KeyCode == cfg.c4esptoggle then
-        cfg.c4esp = not cfg.c4esp
-        notify("C4 ESP", "Enabled: " .. tostring(cfg.c4esp), 3)
+    if input.KeyCode == _G.Avidbot_SilentAim.togglekey then
+        _G.Avidbot_SilentAim.enabled = not _G.Avidbot_SilentAim.enabled
+        notify("Silent Aim", "Enabled: " .. tostring(_G.Avidbot_SilentAim.enabled), 3)
+    elseif input.KeyCode == _G.Avidbot_SilentAim.esptoggle then
+        _G.Avidbot_SilentAim.esp = not _G.Avidbot_SilentAim.esp
+        notify("ESP", "Enabled: " .. tostring(_G.Avidbot_SilentAim.esp), 3)
+    elseif input.KeyCode == _G.Avidbot_SilentAim.c4esptoggle then
+        _G.Avidbot_SilentAim.c4esp = not _G.Avidbot_SilentAim.c4esp
+        notify("C4 ESP", "Enabled: " .. tostring(_G.Avidbot_SilentAim.c4esp), 3)
     end
 end)
 
@@ -1595,9 +1595,9 @@ local function setupHook()
     if not castRayFunc then return false end
     
     origCastRay = hookfunction(castRayFunc, noUpvals(function(startPos, targetPos, ...)
-        if not cfg.enabled then return origCastRay(startPos, targetPos, ...) end
+        if not _G.Avidbot_SilentAim.enabled then return origCastRay(startPos, targetPos, ...) end
         
-        local closest = getClosest(cfg.fov)
+        local closest = getClosest(_G.Avidbot_SilentAim.fov)
         
         if closest and closest.Character then
             local gun = currentGun
@@ -1619,13 +1619,13 @@ local function setupHook()
                 return origCastRay(startPos, targetPos, ...)
             end
             
-            if cfg.shotgungamehandled and shotgun then
+            if _G.Avidbot_SilentAim.shotgungamehandled and shotgun then
                 return origCastRay(startPos, targetPart.Position, ...)
             end
             
-            if cfg.taseralwayshit and isTaser then
+            if _G.Avidbot_SilentAim.taseralwayshit and isTaser then
                 shouldHit = true
-            elseif cfg.ifplayerstill and isStanding(closest) then
+            elseif _G.Avidbot_SilentAim.ifplayerstill and isStanding(closest) then
                 shouldHit = true
             elseif bypassHitchance then
                 shouldHit = true
@@ -1640,12 +1640,12 @@ local function setupHook()
                 if isTaser then
                     return origCastRay(startPos, targetPart.Position, ...)
                 end
-                if cfg.shotgunnaturalspread and shotgun then
+                if _G.Avidbot_SilentAim.shotgunnaturalspread and shotgun then
                     return origCastRay(startPos, targetPart.Position, ...)
                 end
                 return targetPart, targetPart.Position
             else
-                if cfg.missspread > 0 then
+                if _G.Avidbot_SilentAim.missspread > 0 then
                     local missPos = getMissPos(startPos, targetPart)
                     return origCastRay(startPos, missPos, ...)
                 end

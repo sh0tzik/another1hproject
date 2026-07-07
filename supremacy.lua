@@ -568,14 +568,15 @@ local Library do
 				Parent = Gui,
 				AnchorPoint = Vector2New(1, 1),
 				BorderColor3 = FromRGB(0, 0, 0),
-				Size = UDim2New(0, 8, 0, 8),
+				Size = UDim2New(0, 15, 0, 15), -- increased size for easier dragging
 				Position = UDim2New(1, 0, 1, 0),
                 Name = "\0",
 				BorderSizePixel = 0,
 				BackgroundTransparency = 1,
 				AutoButtonColor = false,
                 Visible = true,
-                Text = ""
+                Text = "",
+                ZIndex = 100
 			})
 
             ResizeButton:Connect("InputBegan", function(Input)

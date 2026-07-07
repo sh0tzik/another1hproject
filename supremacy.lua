@@ -4295,7 +4295,7 @@ local Library do
         end
 
         Items["SearchPopup"] = Instances:Create("Frame", {
-            Parent = self.Holder,
+            Parent = self.Holder.Instance,
             AnchorPoint = Vector2New(0.5, 0),
             Position = UDim2New(0.5, 0, 0, -50),
             Size = UDim2New(0, 300, 0, 35),

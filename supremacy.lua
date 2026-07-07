@@ -1469,6 +1469,10 @@ local Library do
                     Items["Outline"]:MakeDraggable()
                 end
 
+                if Data.Resizeable then
+                    Items["Outline"]:MakeResizeable(Data.MinimumSize or Vector2New(300, 300))
+                end
+
                 Instances:Create("UIStroke", {
                     Parent = Items["Outline"].Instance,
                     Color = FromRGB(68, 68, 68),
@@ -4194,7 +4198,9 @@ local Library do
             Position = UDim2New(0, Camera.ViewportSize.X / 4, 0, Camera.ViewportSize.Y / 3),
             Size = Window.Size,
             Parent = self.Holder,
-            Draggable = true
+            Draggable = true,
+            Resizeable = true,
+            MinimumSize = Vector2New(450, 400)
         }) do 
             Items["Pages"] = Instances:Create("Frame", {
                 Parent = Items["Inline"].Instance,

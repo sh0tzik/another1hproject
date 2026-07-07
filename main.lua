@@ -54,7 +54,8 @@ local defaultSilentAim = {
     showfov = false,
     showtargetline = false,
     esp = false,
-    c4esp = false
+    c4esp = false,
+    desync = false
 }
 for k, v in pairs(defaultSilentAim) do
     if _G.Avidbot_SilentAim[k] == nil then
@@ -1678,6 +1679,33 @@ local MiscTab = Window:Page({ Name = "Misc", Columns = 2 })
 local RageAimbot = RageTab:Section({ Name = "Aimbot", Side = 1 })
 RageAimbot:Toggle({ Name = "Enabled", Flag = "Rage_AimbotEnabled", Default = false, Callback = function(State) end })
 RageAimbot:Toggle({ Name = "Silent Aim", Flag = "Rage_SilentAim", Default = false, Callback = function(State) end })
+
+local RageDesync = RageTab:Section({ Name = "Desync", Side = 1 })
+local desyncHook = nil
+RageDesync:Toggle({ Name = "Fake Lag / Desync", Flag = "Rage_Desync", Default = false, Callback = function(State)
+    _G.Avidbot_SilentAim.desync = State
+    if State then
+        if not desyncHook and raknet and raknet.add_send_hook then
+            desyncHook = function(packet)
+                if packet.PacketId == 0x1B then
+                    local buf = packet.AsBuffer
+                    buffer.writeu32(buf, 1, 0xFFFFFFFF)
+                    packet:SetData(buf)
+                end
+            end
+            pcall(function()
+                raknet.add_send_hook(desyncHook)
+            end)
+        end
+    else
+        if desyncHook and raknet and raknet.remove_send_hook then
+            pcall(function()
+                raknet.remove_send_hook(desyncHook)
+            end)
+            desyncHook = nil
+        end
+    end
+end })
 
 local RageWeapon = RageTab:Section({ Name = "Weapon", Side = 2 })
 RageWeapon:Toggle({ Name = "No Recoil", Flag = "Rage_NoRecoil", Default = false, Callback = function(State) end })

@@ -815,6 +815,7 @@ end
 
 local function getPart(char, name)
     if not char then return nil end
+    if not name then name = "Head" end
     local p = char:FindFirstChild(name)
     if p then return p end
     

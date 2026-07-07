@@ -7,6 +7,8 @@ _G.Avidbot_SilentAim.esp = false
 _G.Avidbot_SilentAim.c4esp = false
 _G.Avidbot_SilentAim.showfov = false
 _G.Avidbot_SilentAim.autoshoot = false
+_G.Avidbot_SilentAim.hitchance = 65
+_G.Avidbot_SilentAim.missspread = 5
 
 -- Load the Silent Aim Core
 task.spawn(function()

@@ -9,6 +9,7 @@ _G.Avidbot_SilentAim.showfov = false
 _G.Avidbot_SilentAim.autoshoot = false
 _G.Avidbot_SilentAim.hitchance = 65
 _G.Avidbot_SilentAim.missspread = 5
+_G.Avidbot_SilentAim.fov = 100
 
 --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!

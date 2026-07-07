@@ -3,13 +3,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sh0tz
 local Window = Library:Window({
     Name = "Supremacy Example",
     Size = UDim2.new(0, 563, 0, 558),
-    GradientTitle = {
-        Enabled = true,
-        Start = Color3.fromRGB(255, 105, 180),
-        Middle = Color3.fromRGB(255, 255, 255),
-        End = Color3.fromRGB(255, 105, 180),
-        Speed = 2
-    }
+    Resizeable = true, -- Управляет тем, можно ли растягивать окно за правый нижний угол
+    MinimumSize = Vector2.new(450, 400) -- Минимальный размер окна
 })
 
 local MainTab = Window:Page({

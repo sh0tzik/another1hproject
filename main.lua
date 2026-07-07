@@ -174,13 +174,29 @@ local Adornments = {}
 local function GetAdornment(player, part)
     if not Adornments[player] then Adornments[player] = {} end
     if not Adornments[player][part] then
-        local box = Instance.new("Part")
+        -- Clone the part to keep Meshes (Accessories, Hair, Custom Limbs)
+        local box = part:Clone()
+        
+        -- Clean up the clone
+        for _, child in pairs(box:GetChildren()) do
+            if child:IsA("SpecialMesh") then
+                child.TextureId = "" -- Remove texture to show color/material
+            else
+                child:Destroy() -- Remove scripts, welds, decals, etc.
+            end
+        end
+        
+        if box:IsA("MeshPart") then
+            box.TextureID = ""
+        end
+        
         box.Name = part.Name
         box.Anchored = true
         box.CanCollide = false
         box.Massless = true
         box.CastShadow = false
-        box.Size = part.Size + Vector3.new(0.05, 0.05, 0.05)
+        -- Remove any built-in size offset we had for generic parts
+        box.Size = part.Size
         box.Parent = ChamsFolder
         Adornments[player][part] = box
     end
@@ -224,10 +240,9 @@ RunService.RenderStepped:Connect(function()
                 if myChar then table.insert(filterList, myChar) end
                 rayParams.FilterDescendantsInstances = filterList
 
-                for _, part in pairs(character:GetChildren()) do
-                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" and part.Transparency < 1 then
                         local box = GetAdornment(player, part)
-                        box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
                         box.CFrame = part.CFrame
                         box.Material = materialEnum
 

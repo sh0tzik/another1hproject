@@ -183,6 +183,8 @@ local Library do
 
     Library = {
         Flags = { },
+        SearchableItems = { },
+        RegisteredSections = { },
 
         MenuKeybind = tostring(Enum.KeyCode.Z), 
 
@@ -4291,6 +4293,34 @@ local Library do
             Items["Outline"].Instance.Visible = Bool
         end
 
+        Items["SearchPopup"] = Instances:Create("Frame", {
+            Parent = self.Holder,
+            AnchorPoint = Vector2New(0.5, 0),
+            Position = UDim2New(0.5, 0, 0, -50),
+            Size = UDim2New(0, 300, 0, 35),
+            BackgroundColor3 = FromRGB(25, 25, 25),
+            BorderColor3 = FromRGB(0, 0, 0),
+            BorderSizePixel = 2,
+            Visible = true,
+            ZIndex = 200
+        }) Items["SearchPopup"]:AddToTheme({BackgroundColor3 = "Window Background", BorderColor3 = "Outline"})
+        
+        Items["SearchInput"] = Instances:Create("TextBox", {
+            Parent = Items["SearchPopup"].Instance,
+            Size = UDim2New(1, -10, 1, 0),
+            Position = UDim2New(0, 5, 0, 0),
+            BackgroundTransparency = 1,
+            Text = "",
+            PlaceholderText = "Search...",
+            TextColor3 = FromRGB(255, 255, 255),
+            PlaceholderColor3 = FromRGB(150, 150, 150),
+            TextSize = 14,
+            Font = Library.Font,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 201
+        }) Items["SearchInput"]:AddToTheme({TextColor3 = "Text"})
+
+        local SearchOpen = false
         Library:Connect(UserInputService.InputBegan, function(Input, GameProcessed)
             if GameProcessed then 
                 return
@@ -4298,6 +4328,44 @@ local Library do
 
             if tostring(Input.KeyCode) == Library.MenuKeybind or tostring(Input.UserInputType) == Library.MenuKeybind then
                 Window:SetOpen(not Window.IsOpen)
+            end
+
+            if Input.KeyCode == Enum.KeyCode.F and (UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)) then
+                SearchOpen = not SearchOpen
+                if SearchOpen then
+                    Items["SearchPopup"]:Tween(TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2New(0.5, 0, 0, 20)})
+                    task.wait(0.1)
+                    Items["SearchInput"].Instance:CaptureFocus()
+                else
+                    Items["SearchPopup"]:Tween(TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2New(0.5, 0, 0, -50)})
+                    Items["SearchInput"].Instance:ReleaseFocus()
+                end
+            end
+        end)
+
+        Library:Connect(Items["SearchInput"].Instance:GetPropertyChangedSignal("Text"), function()
+            local query = string.lower(Items["SearchInput"].Instance.Text)
+            for _, item in ipairs(Library.SearchableItems) do
+                if query == "" or string.find(string.lower(item.Name), query) then
+                    item.Instance.Visible = true
+                else
+                    item.Instance.Visible = false
+                end
+            end
+            
+            for _, section in ipairs(Library.RegisteredSections) do
+                local hasVisible = false
+                if query == "" then
+                    hasVisible = true
+                else
+                    for _, child in ipairs(section.Items["Content"].Instance:GetChildren()) do
+                        if child:IsA("GuiObject") and child.Visible and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
+                            hasVisible = true
+                            break
+                        end
+                    end
+                end
+                section.Items["Section"].Instance.Visible = hasVisible
             end
         end)
 
@@ -4365,6 +4433,7 @@ local Library do
         })
 
         Section.Items = Items
+        table.insert(Library.RegisteredSections, Section)
         return setmetatable(Section, Library.Sections)
     end
 
@@ -4826,6 +4895,7 @@ local Library do
             Callback = Toggle.Callback,
             Tooltip = Toggle.Tooltip
         })
+        table.insert(Library.SearchableItems, { Name = Toggle.Name, Instance = Items["Toggle"].Instance, Section = self })
 
         function Toggle:Set(Value)
             NewToggle:Set(Value)
@@ -4950,6 +5020,7 @@ local Library do
             Tooltip = Button.Tooltip,
             Risky = Button.Risky
         })
+        table.insert(Library.SearchableItems, { Name = Button.Name, Instance = Items["Button"].Instance, Section = self })
 
         function Button:SetVisibility(Bool)
             Button:SetVisibility(Bool)
@@ -5013,6 +5084,7 @@ local Library do
             Decimals = Slider.Decimals,
             Callback = Slider.Callback
         })
+        table.insert(Library.SearchableItems, { Name = Slider.Name, Instance = Items["Slider"].Instance, Section = self })
 
         function Slider:Set(Value)
             NewSlider:Set(Value)
@@ -5054,6 +5126,7 @@ local Library do
             Callback = Dropdown.Callback,
             Multi = Dropdown.Multi
         })
+        table.insert(Library.SearchableItems, { Name = Dropdown.Name, Instance = Items["Dropdown"].Instance, Section = self })
 
         function Dropdown:Set(Value)
             NewDropdown:Set(Value)
@@ -5099,6 +5172,7 @@ local Library do
             Parent = Label.Section.Items["Content"],
             Alignment = Label.Alignment
         })
+        table.insert(Library.SearchableItems, { Name = Label.Name, Instance = Items["Label"].Instance, Section = self })
 
         function Label:SetVisibility(Bool)
             Items["Label"].Instance.Visible = Bool
@@ -5217,6 +5291,7 @@ local Library do
             Placeholder = Textbox.Placeholder,
             Callback = Textbox.Callback
         })
+        table.insert(Library.SearchableItems, { Name = Textbox.Name, Instance = Items["Textbox"].Instance, Section = self })
 
         function Textbox:Set(Value)
             NewTextbox:Set(Value)
@@ -5260,6 +5335,7 @@ local Library do
             Items = Listbox.Items,
             Size = Listbox.Size
         })
+        table.insert(Library.SearchableItems, { Name = Listbox.Name, Instance = Items["Listbox"].Instance, Section = self })
 
         function Listbox:Set(Option)
             NewListbox:Set(Option)

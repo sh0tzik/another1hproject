@@ -1468,7 +1468,7 @@ local Library do
                 if not Data.IsTextButton then
                     Items["Outline"] = Instances:Create("Frame", {
                         Parent = Data.Parent.Instance,
-                        AnchorPoint = Vector2New(0.5, 0.5),
+                        AnchorPoint = Vector2New(0, 0),
                         Name = "\0",
                         Position = Data.Position,
                         BorderColor3 = FromRGB(0, 0, 0),
@@ -1482,7 +1482,7 @@ local Library do
                         Parent = Data.Parent.Instance,
                         Text = "",
                         AutoButtonColor = false,
-                        AnchorPoint = Vector2New(0.5, 0.5),
+                        AnchorPoint = Vector2New(0, 0),
                         Name = "\0",
                         Position = Data.Position,
                         BorderColor3 = FromRGB(0, 0, 0),

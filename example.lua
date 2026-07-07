@@ -5,9 +5,9 @@ local Window = Library:Window({
     Size = UDim2.new(0, 563, 0, 558),
     GradientTitle = {
         Enabled = true,
-        Start = Color3.fromRGB(31, 226, 130),
+        Start = Color3.fromRGB(255, 105, 180),
         Middle = Color3.fromRGB(255, 255, 255),
-        End = Color3.fromRGB(31, 226, 130),
+        End = Color3.fromRGB(255, 105, 180),
         Speed = 2
     }
 })
@@ -44,7 +44,7 @@ AimbotToggle:Keybind({
 AimbotToggle:Colorpicker({
     Name = "FOV Circle Color",
     Flag = "FOVColor",
-    Default = Color3.fromRGB(31, 226, 130),
+    Default = Color3.fromRGB(255, 105, 180),
     Callback = function(Color, Alpha)
         print("FOV Color changed:", Color)
     end
@@ -84,7 +84,7 @@ MiscSection:Button({
     Name = "Print Hello",
     Risky = false,
     Callback = function()
-        Library:Notification("Hello from Supremacy!", 3, Color3.fromRGB(31, 226, 130))
+        Library:Notification("Hello from Supremacy!", 3, Color3.fromRGB(255, 105, 180))
     end
 })
 
@@ -99,6 +99,6 @@ PlayersTab:PlayerList()
 Library:Watermark("Supremacy Example | v1.0")
 
 -- Library:Notification(Text, Duration, Color, {IconId, IconColor})
-Library:Notification("Successfully loaded Supremacy Example!", 5, Color3.fromRGB(31, 226, 130))
+Library:Notification("Successfully loaded Supremacy Example!", 5, Color3.fromRGB(255, 105, 180))
 
 Library:KeybindList()

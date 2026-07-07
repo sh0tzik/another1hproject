@@ -580,17 +580,31 @@ local Library do
                 ZIndex = 100
 			})
 
-            local ResizeIcon = Instances:Create("TextLabel", {
+            local DotsFolder = Instances:Create("Frame", {
                 Parent = ResizeButton.Instance,
                 BackgroundTransparency = 1,
                 Size = UDim2New(1, 0, 1, 0),
-                Text = "◢",
-                TextSize = 12,
-                TextColor3 = FromRGB(150, 150, 150),
-                TextXAlignment = Enum.TextXAlignment.Right,
-                TextYAlignment = Enum.TextYAlignment.Bottom,
                 ZIndex = 100
             })
+            local DotPositions = {
+                UDim2New(1, -4, 1, -4),
+                UDim2New(1, -8, 1, -4),
+                UDim2New(1, -12, 1, -4),
+                UDim2New(1, -4, 1, -8),
+                UDim2New(1, -8, 1, -8),
+                UDim2New(1, -4, 1, -12),
+            }
+            for _, Pos in DotPositions do
+                Instances:Create("Frame", {
+                    Parent = DotsFolder.Instance,
+                    AnchorPoint = Vector2New(1, 1),
+                    Size = UDim2New(0, 2, 0, 2),
+                    Position = Pos,
+                    BorderSizePixel = 0,
+                    BackgroundColor3 = FromRGB(120, 120, 120),
+                    ZIndex = 100
+                })
+            end
 
             ResizeButton:Connect("InputBegan", function(Input)
                 if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
@@ -613,7 +627,7 @@ local Library do
 					Delta = Start + UDim2New(0, Input.Position.X, 0, Input.Position.Y)
 					Delta = UDim2New(0, math.clamp(Delta.X.Offset, Minimum.X, ResizeMax.X), 0, math.clamp(Delta.Y.Offset, Minimum.Y, ResizeMax.Y))
 
-					Tween:Create(Gui, TweenInfo.new(0.17, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = Delta}, true)
+					Gui.Size = Delta
                 end
             end)
 

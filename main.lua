@@ -46,6 +46,7 @@ ESPSection:Toggle({ Name = "Names", Flag = "ESP_Names", Default = false, Callbac
 
 local ChamsSection = VisualsTab:Section({ Name = "Chams", Side = 1 })
 ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_Enabled", Default = false, Callback = function(State) end })
+ChamsSection:Dropdown({ Name = "Material", Flag = "Chams_Material", Items = {"Plastic", "ForceField", "Neon", "Glass", "Metal", "Ice"}, Default = "ForceField", Multi = false, Callback = function() end })
 ChamsSection:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", Default = Color3.fromRGB(0, 255, 0), Callback = function() end })
 ChamsSection:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
 ChamsSection:Slider({ Name = "Transparency", Flag = "Chams_Transparency", Min = 0, Max = 100, Default = 50, Decimals = 0, Suffix = "%", Callback = function() end })
@@ -153,12 +154,13 @@ local Adornments = {}
 local function GetAdornment(player, part)
     if not Adornments[player] then Adornments[player] = {} end
     if not Adornments[player][part] then
-        local box = Instance.new("BoxHandleAdornment")
+        local box = Instance.new("Part")
         box.Name = part.Name
-        box.AlwaysOnTop = true
-        box.ZIndex = 5
-        box.Adornee = part
-        box.Size = part.Size + Vector3.new(0.05, 0.05, 0.05) -- Slightly larger to avoid clipping
+        box.Anchored = true
+        box.CanCollide = false
+        box.Massless = true
+        box.CastShadow = false
+        box.Size = part.Size + Vector3.new(0.05, 0.05, 0.05)
         box.Parent = ChamsFolder
         Adornments[player][part] = box
     end
@@ -179,6 +181,10 @@ RunService.RenderStepped:Connect(function()
     local visColor = Library.Flags["Chams_VisibleColor"] or Color3.fromRGB(0, 255, 0)
     local hidColor = Library.Flags["Chams_HiddenColor"] or Color3.fromRGB(255, 0, 0)
     local transparency = (Library.Flags["Chams_Transparency"] or 50) / 100
+    local materialType = Library.Flags["Chams_Material"] or "ForceField"
+    
+    local materialEnum = Enum.Material.ForceField
+    pcall(function() materialEnum = Enum.Material[materialType] end)
 
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -187,22 +193,24 @@ RunService.RenderStepped:Connect(function()
                 local myChar = LocalPlayer.Character
                 local rayParams = RaycastParams.new()
                 rayParams.FilterType = Enum.RaycastFilterType.Exclude
-                rayParams.FilterDescendantsInstances = {myChar, character, Camera}
+                rayParams.FilterDescendantsInstances = {myChar, character, Camera, ChamsFolder}
 
                 for _, part in pairs(character:GetChildren()) do
                     if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
                         local box = GetAdornment(player, part)
                         box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
+                        box.CFrame = part.CFrame
                         box.Transparency = transparency
+                        box.Material = materialEnum
 
                         local origin = Camera.CFrame.Position
                         local direction = (part.Position - origin)
                         local rayResult = workspace:Raycast(origin, direction, rayParams)
 
                         if rayResult then
-                            box.Color3 = hidColor
+                            box.Color = hidColor
                         else
-                            box.Color3 = visColor
+                            box.Color = visColor
                         end
                     end
                 end

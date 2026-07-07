@@ -1763,7 +1763,7 @@ Library:RefreshConfigsList(ConfigListbox)
 local MenuSection = SettingsTab:Section({ Name = "Menu", Side = 2 })
 local MenuToggle = MenuSection:Toggle({ Name = "Menu Keybind", Flag = "MenuToggle_Dummy", Default = false })
 MenuToggle:Keybind({ Name = "Toggle Menu", Flag = "MenuToggle", Mode = "Toggle", Default = Enum.KeyCode.Insert, Callback = function(State)
-    Library.Window.Instance.Enabled = State
+    Window:SetOpen(State)
 end })
 
 Library:Watermark("Avidbot | v1.0")
@@ -1800,9 +1800,12 @@ Viewport.BackgroundTransparency = 1
 Viewport.CurrentCamera = Camera
 Viewport.Parent = ChamsGui
 
+local WorldModel = Instance.new("WorldModel")
+WorldModel.Parent = Viewport
+
 local ChamsFolder = Instance.new("Folder")
 ChamsFolder.Name = "Avidbot_Chams"
-ChamsFolder.Parent = Viewport
+ChamsFolder.Parent = WorldModel
 
 local Adornments = {}
 

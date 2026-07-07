@@ -49,7 +49,6 @@ local ChamsToggle = ChamsSection:Toggle({ Name = "Chams Enabled", Flag = "Chams_
 ChamsSection:Dropdown({ Name = "Material", Flag = "Chams_Material", Items = {"Plastic", "ForceField", "Neon", "Glass", "Metal", "Ice"}, Default = "ForceField", Multi = false, Callback = function() end })
 ChamsToggle:Colorpicker({ Name = "Visible Color", Flag = "Chams_VisibleColor", Default = Color3.fromRGB(0, 255, 0), Callback = function() end })
 ChamsToggle:Colorpicker({ Name = "Hidden Color", Flag = "Chams_HiddenColor", Default = Color3.fromRGB(255, 0, 0), Callback = function() end })
-ChamsSection:Slider({ Name = "Transparency", Flag = "Chams_Transparency", Min = 0, Max = 100, Default = 50, Decimals = 0, Suffix = "%", Callback = function() end })
 
 local ViewmodelSection = VisualsTab:Section({ Name = "Viewmodel", Side = 2 })
 ViewmodelSection:Slider({ Name = "Field of View", Flag = "Visuals_FOV", Min = 70, Max = 120, Default = 90, Decimals = 0, Callback = function(Value) end })
@@ -199,9 +198,15 @@ end
 
 RunService.RenderStepped:Connect(function()
     local enabled = Library.Flags["Chams_Enabled"]
-    local visColor = Library.Flags["Chams_VisibleColor"] or Color3.fromRGB(0, 255, 0)
-    local hidColor = Library.Flags["Chams_HiddenColor"] or Color3.fromRGB(255, 0, 0)
-    local transparency = (Library.Flags["Chams_Transparency"] or 50) / 100
+    
+    local visFlag = Library.Flags["Chams_VisibleColor"]
+    local visColor = type(visFlag) == "table" and visFlag[1] or visFlag or Color3.fromRGB(0, 255, 0)
+    local visAlpha = type(visFlag) == "table" and visFlag[2] or 0
+    
+    local hidFlag = Library.Flags["Chams_HiddenColor"]
+    local hidColor = type(hidFlag) == "table" and hidFlag[1] or hidFlag or Color3.fromRGB(255, 0, 0)
+    local hidAlpha = type(hidFlag) == "table" and hidFlag[2] or 0
+
     local materialType = Library.Flags["Chams_Material"] or "ForceField"
     
     local materialEnum = Enum.Material.ForceField
@@ -224,7 +229,6 @@ RunService.RenderStepped:Connect(function()
                         local box = GetAdornment(player, part)
                         box.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
                         box.CFrame = part.CFrame
-                        box.Transparency = transparency
                         box.Material = materialEnum
 
                         local origin = Camera.CFrame.Position
@@ -233,8 +237,10 @@ RunService.RenderStepped:Connect(function()
 
                         if rayResult then
                             box.Color = hidColor
+                            box.Transparency = hidAlpha
                         else
                             box.Color = visColor
+                            box.Transparency = visAlpha
                         end
                     end
                 end

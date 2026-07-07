@@ -184,6 +184,7 @@ local Library do
     Library = {
         Flags = { },
         SearchableItems = { },
+        Sections = { },
         RegisteredSections = { },
 
         MenuKeybind = tostring(Enum.KeyCode.Z), 

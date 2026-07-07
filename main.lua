@@ -145,10 +145,30 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
+local success = pcall(function() 
+    if CoreGui:FindFirstChild("Avidbot_ChamsGui") then
+        CoreGui:FindFirstChild("Avidbot_ChamsGui"):Destroy()
+    end
+end)
+if LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Avidbot_ChamsGui") then
+    LocalPlayer.PlayerGui.Avidbot_ChamsGui:Destroy()
+end
+
+local ChamsGui = Instance.new("ScreenGui")
+ChamsGui.Name = "Avidbot_ChamsGui"
+ChamsGui.IgnoreGuiInset = true
+local success = pcall(function() ChamsGui.Parent = CoreGui end)
+if not success then ChamsGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+local Viewport = Instance.new("ViewportFrame")
+Viewport.Size = UDim2.new(1, 0, 1, 0)
+Viewport.BackgroundTransparency = 1
+Viewport.CurrentCamera = Camera
+Viewport.Parent = ChamsGui
+
 local ChamsFolder = Instance.new("Folder")
 ChamsFolder.Name = "Avidbot_Chams"
-local success = pcall(function() ChamsFolder.Parent = CoreGui end)
-if not success then ChamsFolder.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+ChamsFolder.Parent = Viewport
 
 local Adornments = {}
 
@@ -194,7 +214,10 @@ RunService.RenderStepped:Connect(function()
                 local myChar = LocalPlayer.Character
                 local rayParams = RaycastParams.new()
                 rayParams.FilterType = Enum.RaycastFilterType.Exclude
-                rayParams.FilterDescendantsInstances = {myChar, character, Camera, ChamsFolder}
+                
+                local filterList = {character, Camera, ChamsFolder}
+                if myChar then table.insert(filterList, myChar) end
+                rayParams.FilterDescendantsInstances = filterList
 
                 for _, part in pairs(character:GetChildren()) do
                     if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then

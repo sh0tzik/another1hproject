@@ -1599,6 +1599,7 @@ local Library do
                     Position = UDim2New(0, 0, 0.5, 0),
                     Name = "\0",
                     Size = UDim2New(0, 0, 1, 2),
+                    ZIndex = 0,
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(255, 105, 180)
                 })  Items["Glow"]:AddToTheme({BackgroundColor3 = "Accent"})
@@ -1689,7 +1690,7 @@ local Library do
 
                     Items["Inactive"]:Tween(nil, {TextColor3 = Library.Theme.Accent})
                     Items["Liner"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
-                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 0, Size = UDim2New(1, 0, 1, 2)})
+                    Items["Glow"]:Tween(nil, {BackgroundTransparency = 0, Size = UDim2New(0, 40, 1, 2)})
                 else
                     Items["Inactive"]:ChangeItemTheme({TextColor3 = "Text"})
                     Items["Liner"]:ChangeItemTheme({BackgroundColor3 = "Dark Liner"})

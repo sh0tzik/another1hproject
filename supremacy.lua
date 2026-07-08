@@ -4643,6 +4643,23 @@ local Library do
             PlayerStatusModeDropdownItems["Dropdown"].Instance.Position = UDim2New(1, -8, 1, -65)
             PlayerStatusModeDropdownItems["Dropdown"].Instance.Size = UDim2New(0, 200, 0, 17)
             PlayerStatusModeDropdownItems["Dropdown"].Instance.AnchorPoint = Vector2New(1, 1)
+
+            local PlayerTrashtalkToggle, PlayerTrashtalkToggleItems = Components.Toggle({
+                Name = "Trashtalk on kill",
+                Flag = "PlayerListTrashtalk",
+                Parent = Items["Playerlist"],
+                Default = false,
+                Callback = function(Value)
+                    if Playerlist.Player then
+                        if Playerlist.Player == LocalPlayer then return end
+                        if not _G.Avidbot_TrashtalkList then _G.Avidbot_TrashtalkList = {} end
+                        _G.Avidbot_TrashtalkList[Playerlist.Player.Name] = Value
+                    end
+                end
+            })
+            PlayerTrashtalkToggleItems["Toggle"].Instance.Position = UDim2New(1, -8, 1, -40)
+            PlayerTrashtalkToggleItems["Toggle"].Instance.Size = UDim2New(0, 200, 0, 17)
+            PlayerTrashtalkToggleItems["Toggle"].Instance.AnchorPoint = Vector2New(1, 1)
         end
 
         function Playerlist:Remove(Name)
@@ -4831,12 +4848,21 @@ local Library do
                     Items["Avatar"].Instance.Image = PlayerAvatar
                     Items["Username"].Instance.Text = Playerlist.Player.DisplayName .. " (@" .. Playerlist.Player.Name .. ")"
                     Items["UserID"].Instance.Text = tostring(Playerlist.Player.UserId)
+                    
+                    if Playerlist.PlayerTrashtalkToggle then
+                        local trashtalkState = _G.Avidbot_TrashtalkList and _G.Avidbot_TrashtalkList[Playerlist.Player.Name] or false
+                        Playerlist.PlayerTrashtalkToggle:Set(trashtalkState)
+                    end
                 else
                     Playerlist.Player = nil
                     PlayerData:Toggle("Inactive")
                     Items["Avatar"].Instance.Image = "rbxassetid://98200387761744"
                     Items["Username"].Instance.Text = "None"
                     Items["UserID"].Instance.Text = "None"
+                    
+                    if Playerlist.PlayerTrashtalkToggle then
+                        Playerlist.PlayerTrashtalkToggle:Set(false)
+                    end
                 end
 
                 if Data.Callback then 

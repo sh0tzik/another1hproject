@@ -4888,18 +4888,30 @@ local Library do
                         end
 
                         if Value == "Neutral" then
+                            _G.Avidbot_PlayerPriorities = _G.Avidbot_PlayerPriorities or {}
+                            _G.Avidbot_PlayerFriendly = _G.Avidbot_PlayerFriendly or {}
+                            _G.Avidbot_PlayerPriorities[Playerlist.Player.Name] = false
+                            _G.Avidbot_PlayerFriendly[Playerlist.Player.Name] = false
                             Playerlist.Players[Playerlist.Player.Name].PlayerStatus:Tween(nil, {
                                 TextColor3 = FromRGB(180, 180, 180)
                             })
 
                             Playerlist.Players[Playerlist.Player.Name].PlayerStatus.Instance.Text = "Neutral"
                         elseif Value == "Priority" then
+                            _G.Avidbot_PlayerPriorities = _G.Avidbot_PlayerPriorities or {}
+                            _G.Avidbot_PlayerFriendly = _G.Avidbot_PlayerFriendly or {}
+                            _G.Avidbot_PlayerPriorities[Playerlist.Player.Name] = true
+                            _G.Avidbot_PlayerFriendly[Playerlist.Player.Name] = false
                             Playerlist.Players[Playerlist.Player.Name].PlayerStatus:Tween(nil, {
                                 TextColor3 = FromRGB(255, 50, 50)
                             })
 
                             Playerlist.Players[Playerlist.Player.Name].PlayerStatus.Instance.Text = "Priority"
                         elseif Value == "Friendly" then
+                            _G.Avidbot_PlayerPriorities = _G.Avidbot_PlayerPriorities or {}
+                            _G.Avidbot_PlayerFriendly = _G.Avidbot_PlayerFriendly or {}
+                            _G.Avidbot_PlayerPriorities[Playerlist.Player.Name] = false
+                            _G.Avidbot_PlayerFriendly[Playerlist.Player.Name] = true
                             Playerlist.Players[Playerlist.Player.Name].PlayerStatus:Tween(nil, {
                                 TextColor3 = FromRGB(83, 255, 83)
                             })
@@ -4936,6 +4948,8 @@ local Library do
             PlayerTrashtalkToggleItems["Toggle"].Instance.Position = UDim2New(1, -8, 1, -40)
             PlayerTrashtalkToggleItems["Toggle"].Instance.Size = UDim2New(0, 200, 0, 17)
             PlayerTrashtalkToggleItems["Toggle"].Instance.AnchorPoint = Vector2New(1, 1)
+            
+            Playerlist.PlayerTrashtalkToggle = PlayerTrashtalkToggle
         end
 
         function Playerlist:Remove(Name)
@@ -5128,6 +5142,19 @@ local Library do
                     if Playerlist.PlayerTrashtalkToggle then
                         local trashtalkState = _G.Avidbot_TrashtalkList and _G.Avidbot_TrashtalkList[Playerlist.Player.Name] or false
                         Playerlist.PlayerTrashtalkToggle:Set(trashtalkState)
+                    end
+                    if PlayerStatusModeDropdown then
+                        _G.Avidbot_PlayerPriorities = _G.Avidbot_PlayerPriorities or {}
+                        _G.Avidbot_PlayerFriendly = _G.Avidbot_PlayerFriendly or {}
+                        local isPriority = _G.Avidbot_PlayerPriorities[Playerlist.Player.Name]
+                        local isFriendly = _G.Avidbot_PlayerFriendly[Playerlist.Player.Name]
+                        if isPriority then
+                            PlayerStatusModeDropdown:Set("Priority")
+                        elseif isFriendly then
+                            PlayerStatusModeDropdown:Set("Friendly")
+                        else
+                            PlayerStatusModeDropdown:Set("Neutral")
+                        end
                     end
                 else
                     Playerlist.Player = nil

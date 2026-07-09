@@ -232,6 +232,9 @@ local Library do
         UnnamedConnections = 0,
         UnnamedFlags = 0,
 
+        SnappingEnabled = true,
+        SnappingGridSize = 10,
+
         Holder = nil,
         NotifHolder = nil,
         Font = nil,
@@ -526,7 +529,25 @@ local Library do
 
             local Set = function(Input)
                 local DragDelta = Input.Position - DragStart
-                self:Tween(TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2New(StartPosition.X.Scale, StartPosition.X.Offset + DragDelta.X, StartPosition.Y.Scale, StartPosition.Y.Offset + DragDelta.Y)})
+                local NewX = StartPosition.X.Offset + DragDelta.X
+                local NewY = StartPosition.Y.Offset + DragDelta.Y
+                
+                if Library.SnappingEnabled then
+                    local Snap = Library.SnappingGridSize or 10
+                    NewX = math.floor(NewX / Snap + 0.5) * Snap
+                    NewY = math.floor(NewY / Snap + 0.5) * Snap
+                    
+                    if Camera and Camera.ViewportSize then
+                        local vp = Camera.ViewportSize
+                        local threshold = 15
+                        if NewX < threshold then NewX = 0 end
+                        if NewY < threshold then NewY = 0 end
+                        if NewX + Gui.AbsoluteSize.X > vp.X - threshold then NewX = vp.X - Gui.AbsoluteSize.X end
+                        if NewY + Gui.AbsoluteSize.Y > vp.Y - threshold then NewY = vp.Y - Gui.AbsoluteSize.Y end
+                    end
+                end
+
+                self:Tween(TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2New(StartPosition.X.Scale, NewX, StartPosition.Y.Scale, NewY)})
             end
 
             self:Connect("InputBegan", function(Input)
@@ -1179,6 +1200,179 @@ local Library do
         end
 
         return Watermark
+    end
+
+    Library.TargetHUD = function(self)
+        local TargetHUD = { }
+        local CurrentTarget = nil
+
+        local Items = { } do
+            Items["HUD"] = Instances:Create("Frame", {
+                Parent = Library.Holder.Instance,
+                BorderColor3 = FromRGB(0, 0, 0),
+                AnchorPoint = Vector2New(0.5, 0.5),
+                Name = "\0",
+                Position = UDim2New(0.5, 0, 0.6, 0),
+                Size = UDim2New(0, 220, 0, 65),
+                BorderSizePixel = 2,
+                BackgroundColor3 = FromRGB(12, 12, 12),
+                Visible = false
+            }) Items["HUD"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
+            Items["HUD"]:MakeDraggable()
+
+            Instances:Create("UIStroke", {
+                Parent = Items["HUD"].Instance,
+                Color = FromRGB(68, 68, 68),
+                LineJoinMode = Enum.LineJoinMode.Miter,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            }):AddToTheme({Color = "Border"})
+
+            Items["Liner"] = Instances:Create("Frame", {
+                Parent = Items["HUD"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 0, 0, 0),
+                BorderColor3 = FromRGB(0, 0, 0),
+                Size = UDim2New(1, 0, 0, 2),
+                BorderSizePixel = 0,
+                BackgroundColor3 = FromRGB(255, 105, 180)
+            }) Items["Liner"]:AddToTheme({BackgroundColor3 = "Accent"})
+
+            Instances:Create("UIGradient", {
+                Parent = Items["Liner"].Instance,
+                Rotation = 90,
+                Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(94, 94, 94))}
+            }) 
+
+            Items["AvatarContainer"] = Instances:Create("Frame", {
+                Parent = Items["HUD"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 6, 0, 8),
+                Size = UDim2New(0, 48, 0, 48),
+                BackgroundColor3 = FromRGB(25, 25, 25),
+                BorderColor3 = FromRGB(0, 0, 0),
+                BorderSizePixel = 1
+            }) Items["AvatarContainer"]:AddToTheme({BorderColor3 = "Outline"})
+            
+            Instances:Create("UIStroke", {
+                Parent = Items["AvatarContainer"].Instance,
+                Color = FromRGB(68, 68, 68),
+                LineJoinMode = Enum.LineJoinMode.Miter,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            }):AddToTheme({Color = "Border"})
+
+            Items["Avatar"] = Instances:Create("ImageLabel", {
+                Parent = Items["AvatarContainer"].Instance,
+                Name = "\0",
+                Size = UDim2New(1, 0, 1, 0),
+                BackgroundTransparency = 1,
+                ScaleType = Enum.ScaleType.Fit
+            })
+
+            Items["Name"] = Instances:Create("TextLabel", {
+                Parent = Items["HUD"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 62, 0, 8),
+                Size = UDim2New(1, -70, 0, 18),
+                BackgroundTransparency = 1,
+                FontFace = Library.Font,
+                TextSize = 13,
+                TextColor3 = FromRGB(255, 255, 255),
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Text = "Waiting for target..."
+            }) Items["Name"]:AddToTheme({TextColor3 = "Text"})
+
+            Items["HealthBarBack"] = Instances:Create("Frame", {
+                Parent = Items["HUD"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 62, 0, 36),
+                Size = UDim2New(1, -70, 0, 14),
+                BackgroundColor3 = FromRGB(20, 20, 20),
+                BorderColor3 = FromRGB(0, 0, 0),
+                BorderSizePixel = 1
+            }) Items["HealthBarBack"]:AddToTheme({BorderColor3 = "Outline"})
+
+            Instances:Create("UIStroke", {
+                Parent = Items["HealthBarBack"].Instance,
+                Color = FromRGB(68, 68, 68),
+                LineJoinMode = Enum.LineJoinMode.Miter,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            }):AddToTheme({Color = "Border"})
+
+            Items["HealthBarFront"] = Instances:Create("Frame", {
+                Parent = Items["HealthBarBack"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 0, 0, 0),
+                Size = UDim2New(1, 0, 1, 0),
+                BackgroundColor3 = FromRGB(0, 255, 0),
+                BorderSizePixel = 0
+            })
+            
+            Instances:Create("UIGradient", {
+                Parent = Items["HealthBarFront"].Instance,
+                Rotation = 90,
+                Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(150, 150, 150))}
+            })
+
+            Items["HealthText"] = Instances:Create("TextLabel", {
+                Parent = Items["HealthBarBack"].Instance,
+                Name = "\0",
+                Size = UDim2New(1, 0, 1, 0),
+                BackgroundTransparency = 1,
+                FontFace = Library.Font,
+                TextSize = 11,
+                TextColor3 = FromRGB(255, 255, 255),
+                Text = "100/100"
+            })
+        end
+
+        function TargetHUD:Update(Player)
+            if not Player then
+                Items["HUD"].Instance.Visible = false
+                CurrentTarget = nil
+                return
+            end
+            
+            Items["HUD"].Instance.Visible = true
+            
+            if CurrentTarget ~= Player then
+                CurrentTarget = Player
+                Items["Name"].Instance.Text = Player.DisplayName or Player.Name
+                task.spawn(function()
+                    local success, result = pcall(function()
+                        return Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+                    end)
+                    if success and result and CurrentTarget == Player then
+                        Items["Avatar"].Instance.Image = result
+                    end
+                end)
+            end
+            
+            local Character = Player.Character
+            local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+            
+            if Humanoid then
+                local health = math.clamp(Humanoid.Health, 0, Humanoid.MaxHealth)
+                local maxHealth = math.max(Humanoid.MaxHealth, 1)
+                local ratio = health / maxHealth
+                
+                Items["HealthBarFront"].Instance.Size = UDim2New(ratio, 0, 1, 0)
+                Items["HealthText"].Instance.Text = tostring(math.floor(health)) .. " / " .. tostring(math.floor(maxHealth))
+                
+                local r = math.clamp((1 - ratio) * 2, 0, 1)
+                local g = math.clamp(ratio * 2, 0, 1)
+                Items["HealthBarFront"].Instance.BackgroundColor3 = Color3.new(r, g, 0)
+            else
+                Items["HealthBarFront"].Instance.Size = UDim2New(0, 0, 1, 0)
+                Items["HealthText"].Instance.Text = "0 / 0"
+                Items["HealthBarFront"].Instance.BackgroundColor3 = Color3.new(1, 0, 0)
+            end
+        end
+
+        function TargetHUD:SetVisible(State)
+            Items["HUD"].Instance.Visible = State
+        end
+
+        return TargetHUD
     end
 
     Library.KeybindList = function(self)

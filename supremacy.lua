@@ -5004,9 +5004,9 @@ local Library do
             local PlayerTeam = Instances:Create("TextLabel", {
                 Parent = PlayerButton.Instance,
                 FontFace = Library.Font,
-                TextColor3 = BrickColor.new(tostring(Player.TeamColor)).Color,
+                TextColor3 = Player.Team and Player.TeamColor.Color or FromRGB(180, 180, 180),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Text = tostring(Player.Team) or "None",
+                Text = Player.Team and Player.Team.Name or "Neutral",
                 Name = "\0",
                 Size = UDim2New(0.35, 0, 1, 0),
                 Position = UDim2New(0.35, 8, 0, -1),
@@ -5018,7 +5018,7 @@ local Library do
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  
 
-            if PlayerTeam.Instance.Text == "None" then
+            if PlayerTeam.Instance.Text == "Neutral" then
                 PlayerTeam.Instance.TextColor3 = FromRGB(180, 180, 180)
                 PlayerTeam:AddToTheme({TextColor3 = "Text"})
             end

@@ -541,12 +541,14 @@ local Library do
                 local DragDelta = Input.Position - DragStart
                 local NewX = StartPosition.X.Offset + DragDelta.X
                 local NewY = StartPosition.Y.Offset + DragDelta.Y
-                
+
                 if Library.SnappingEnabled then
-                    local Snap = Library.SnappingGridSize or 10
-                    NewX = math.floor(NewX / Snap + 0.5) * Snap
-                    NewY = math.floor(NewY / Snap + 0.5) * Snap
-                    
+                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                        local Snap = Library.SnappingGridSize or 10
+                        NewX = math.floor(NewX / Snap + 0.5) * Snap
+                        NewY = math.floor(NewY / Snap + 0.5) * Snap
+                    end
+
                     if Camera and Camera.ViewportSize then
                         local vp = Camera.ViewportSize
                         local threshold = 15
@@ -557,7 +559,7 @@ local Library do
                     end
                 end
 
-                self:Tween(TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2New(StartPosition.X.Scale, NewX, StartPosition.Y.Scale, NewY)})
+                Gui.Position = UDim2New(StartPosition.X.Scale, NewX, StartPosition.Y.Scale, NewY)
             end
 
             self:Connect("InputBegan", function(Input)

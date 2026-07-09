@@ -234,6 +234,16 @@ local Library do
 
         SnappingEnabled = true,
         SnappingGridSize = 10,
+        IsOpen = false,
+
+        WatermarkSettings = {
+            ShowName = true,
+            ShowTime = false,
+            ShowFPS = false,
+            ShowPlaytime = false,
+            BaseText = "Watermark",
+            StartTime = os.clock()
+        },
 
         Holder = nil,
         NotifHolder = nil,
@@ -551,6 +561,7 @@ local Library do
             end
 
             self:Connect("InputBegan", function(Input)
+                if not Library.IsOpen then return end
                 if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
                     Dragging = true
 
@@ -785,6 +796,19 @@ local Library do
         ZIndexBehavior = Enum.ZIndexBehavior.Global,
         IgnoreGuiInset = true
     })
+
+    Library.SnappingGrid = Instances:Create("ImageLabel", {
+        Parent = Library.Holder.Instance,
+        Name = "SnappingGrid",
+        Size = UDim2New(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Image = "rbxassetid://6372755229",
+        ImageTransparency = 0.85,
+        ScaleType = Enum.ScaleType.Tile,
+        TileSize = UDim2New(0, Library.SnappingGridSize, 0, Library.SnappingGridSize),
+        ZIndex = -10,
+        Visible = false
+    }).Instance
 
     Library.NotifHolder = Instances:Create("Frame", {
         Parent = Library.Holder.Instance,
@@ -1129,6 +1153,7 @@ local Library do
             })  Items["Watermark"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
 
             Items["Watermark"]:MakeDraggable()
+            Library.WatermarkInstance = Items["Watermark"].Instance
 
             Instances:Create("UIStroke", {
                 Parent = Items["Watermark"].Instance,
@@ -1173,6 +1198,54 @@ local Library do
                 Rotation = 90,
                 Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(94, 94, 94))}
             }) 
+
+            Library.WatermarkSettings.BaseText = Text or "Watermark"
+            
+            local lastTime = os.clock()
+            local frames = 0
+            local currentFps = 0
+
+            RunService.RenderStepped:Connect(function(deltaTime)
+                frames = frames + 1
+                if os.clock() - lastTime >= 1 then
+                    currentFps = frames
+                    frames = 0
+                    lastTime = os.clock()
+                end
+
+                if not Items["Watermark"].Instance.Visible then return end
+
+                local parts = {}
+                if Library.WatermarkSettings.ShowName then
+                    table.insert(parts, Library.WatermarkSettings.BaseText)
+                end
+                
+                if Library.WatermarkSettings.ShowTime then
+                    table.insert(parts, os.date("%X"))
+                end
+                
+                if Library.WatermarkSettings.ShowFPS then
+                    table.insert(parts, tostring(currentFps) .. " FPS")
+                end
+                
+                if Library.WatermarkSettings.ShowPlaytime then
+                    local pt = os.clock() - Library.WatermarkSettings.StartTime
+                    local h = math.floor(pt / 3600)
+                    local m = math.floor((pt % 3600) / 60)
+                    local s = math.floor(pt % 60)
+                    if h > 0 then
+                        table.insert(parts, string.format("%02d:%02d:%02d", h, m, s))
+                    else
+                        table.insert(parts, string.format("%02d:%02d", m, s))
+                    end
+                end
+                
+                if #parts > 0 then
+                    Items["Text"].Instance.Text = table.concat(parts, " | ")
+                else
+                    Items["Text"].Instance.Text = "Watermark"
+                end
+            end)
 
             if Icon then 
                 if type(Icon) == "table" then
@@ -1219,6 +1292,7 @@ local Library do
                 Visible = false
             }) Items["HUD"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
             Items["HUD"]:MakeDraggable()
+            Library.TargetHUDInstance = Items["HUD"].Instance
 
             Instances:Create("UIStroke", {
                 Parent = Items["HUD"].Instance,
@@ -1393,6 +1467,7 @@ local Library do
             })  Items["KeybindListOutline"]:AddToTheme({BackgroundColor3 = "Window Background", BorderColor3 = "Outline"})
 
             Items["KeybindListOutline"]:MakeDraggable()
+            Library.KeybindListInstance = Items["KeybindListOutline"].Instance
 
             Instances:Create("UIStroke", {
                 Parent = Items["KeybindListOutline"].Instance,
@@ -4403,6 +4478,106 @@ local Library do
         return Listbox, Items
     end
 
+    Library.ContextMenu = function(self, Options, Position)
+        if self.CurrentContextMenu then
+            self.CurrentContextMenu:Destroy()
+            self.CurrentContextMenu = nil
+        end
+
+        local menuWidth = 150
+        local ContextMenu = Instances:Create("Frame", {
+            Parent = self.Holder.Instance,
+            Position = UDim2New(0, Position.X, 0, Position.Y),
+            Size = UDim2New(0, menuWidth, 0, 0),
+            BackgroundColor3 = FromRGB(25, 25, 25),
+            BorderColor3 = FromRGB(0, 0, 0),
+            BorderSizePixel = 1,
+            ZIndex = 500
+        }) ContextMenu:AddToTheme({BackgroundColor3 = "Window Background", BorderColor3 = "Outline"})
+
+        Instances:Create("UIListLayout", {
+            Parent = ContextMenu.Instance,
+            SortOrder = Enum.SortOrder.LayoutOrder
+        })
+
+        local totalHeight = 0
+        for i, option in ipairs(Options) do
+            local btn = Instances:Create("TextButton", {
+                Parent = ContextMenu.Instance,
+                Size = UDim2New(1, 0, 0, 20),
+                BackgroundColor3 = FromRGB(35, 35, 35),
+                BorderColor3 = FromRGB(0, 0, 0),
+                BorderSizePixel = 0,
+                Text = option.Name,
+                TextColor3 = FromRGB(200, 200, 200),
+                FontFace = Library.Font,
+                TextSize = 13,
+                AutoButtonColor = false,
+                ZIndex = 501
+            }) btn:AddToTheme({TextColor3 = "Text"})
+
+            btn:Connect("MouseEnter", function()
+                btn.Instance.BackgroundColor3 = FromRGB(45, 45, 45)
+            end)
+            btn:Connect("MouseLeave", function()
+                btn.Instance.BackgroundColor3 = FromRGB(35, 35, 35)
+            end)
+            btn:Connect("MouseButton1Click", function()
+                ContextMenu.Instance:Destroy()
+                self.CurrentContextMenu = nil
+                if option.Callback then option.Callback() end
+            end)
+            totalHeight = totalHeight + 20
+        end
+
+        ContextMenu.Instance.Size = UDim2New(0, menuWidth, 0, totalHeight)
+        self.CurrentContextMenu = ContextMenu.Instance
+    end
+
+    UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+        if not Library.IsOpen then return end
+        
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if Library.CurrentContextMenu then
+                task.delay(0.1, function()
+                    if Library.CurrentContextMenu then
+                        Library.CurrentContextMenu:Destroy()
+                        Library.CurrentContextMenu = nil
+                    end
+                end)
+            end
+        end
+
+        if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+            local mousePos = UserInputService:GetMouseLocation() - Vector2New(0, 36)
+
+            if Library.CurrentContextMenu then
+                Library.CurrentContextMenu:Destroy()
+                Library.CurrentContextMenu = nil
+            end
+
+            local options = {}
+
+            if Library.WatermarkInstance and Library:IsMouseOverFrame(Library.WatermarkInstance) then
+                table.insert(options, { Name = "Toggle Visible", Callback = function() Library.WatermarkInstance.Visible = not Library.WatermarkInstance.Visible end })
+                table.insert(options, { Name = (Library.WatermarkSettings.ShowName and "[+] " or "[-] ") .. "Name", Callback = function() Library.WatermarkSettings.ShowName = not Library.WatermarkSettings.ShowName end })
+                table.insert(options, { Name = (Library.WatermarkSettings.ShowTime and "[+] " or "[-] ") .. "Time", Callback = function() Library.WatermarkSettings.ShowTime = not Library.WatermarkSettings.ShowTime end })
+                table.insert(options, { Name = (Library.WatermarkSettings.ShowFPS and "[+] " or "[-] ") .. "FPS", Callback = function() Library.WatermarkSettings.ShowFPS = not Library.WatermarkSettings.ShowFPS end })
+                table.insert(options, { Name = (Library.WatermarkSettings.ShowPlaytime and "[+] " or "[-] ") .. "Playtime", Callback = function() Library.WatermarkSettings.ShowPlaytime = not Library.WatermarkSettings.ShowPlaytime end })
+            elseif Library.TargetHUDInstance and Library:IsMouseOverFrame(Library.TargetHUDInstance) then
+                table.insert(options, { Name = "Toggle TargetHUD", Callback = function() Library.TargetHUDInstance.Visible = not Library.TargetHUDInstance.Visible end })
+            elseif Library.KeybindListInstance and Library:IsMouseOverFrame(Library.KeybindListInstance) then
+                table.insert(options, { Name = "Toggle Keybinds", Callback = function() Library.KeybindListInstance.Visible = not Library.KeybindListInstance.Visible end })
+            else
+                table.insert(options, { Name = "Toggle Watermark", Callback = function() if Library.WatermarkInstance then Library.WatermarkInstance.Visible = not Library.WatermarkInstance.Visible end end })
+                table.insert(options, { Name = "Toggle TargetHUD", Callback = function() if Library.TargetHUDInstance then Library.TargetHUDInstance.Visible = not Library.TargetHUDInstance.Visible end end })
+                table.insert(options, { Name = "Toggle Keybinds", Callback = function() if Library.KeybindListInstance then Library.KeybindListInstance.Visible = not Library.KeybindListInstance.Visible end end })
+            end
+
+            Library:ContextMenu(options, mousePos)
+        end
+    end)
+
     Library.Window = function(self, Data)
         Data = Data or { }
 
@@ -4485,8 +4660,11 @@ local Library do
 
         function Window:SetOpen(Bool)
             Window.IsOpen = Bool
-
+            Library.IsOpen = Bool
             Items["Outline"].Instance.Visible = Bool
+            if Library.SnappingGrid then
+                Library.SnappingGrid.Visible = Bool
+            end
         end
 
         Items["SearchPopup"] = Instances:Create("Frame", {

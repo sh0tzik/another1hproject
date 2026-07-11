@@ -232,7 +232,7 @@ local Library do
         UnnamedConnections = 0,
         UnnamedFlags = 0,
 
-        IsOpen = false,
+        IsOpen = true,
 
         WatermarkSettings = {
             ShowName = true,

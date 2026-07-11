@@ -232,8 +232,6 @@ local Library do
         UnnamedConnections = 0,
         UnnamedFlags = 0,
 
-        SnappingEnabled = true,
-        SnappingGridSize = 10,
         IsOpen = false,
 
         WatermarkSettings = {
@@ -542,21 +540,13 @@ local Library do
                 local NewX = StartPosition.X.Offset + DragDelta.X
                 local NewY = StartPosition.Y.Offset + DragDelta.Y
 
-                if Library.SnappingEnabled then
-                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                        local Snap = Library.SnappingGridSize or 10
-                        NewX = math.floor(NewX / Snap + 0.5) * Snap
-                        NewY = math.floor(NewY / Snap + 0.5) * Snap
-                    end
-
-                    if Camera and Camera.ViewportSize then
-                        local vp = Camera.ViewportSize
-                        local threshold = 15
-                        if NewX < threshold then NewX = 0 end
-                        if NewY < threshold then NewY = 0 end
-                        if NewX + Gui.AbsoluteSize.X > vp.X - threshold then NewX = vp.X - Gui.AbsoluteSize.X end
-                        if NewY + Gui.AbsoluteSize.Y > vp.Y - threshold then NewY = vp.Y - Gui.AbsoluteSize.Y end
-                    end
+                if Camera and Camera.ViewportSize then
+                    local vp = Camera.ViewportSize
+                    local threshold = 15
+                    if NewX < threshold then NewX = 0 end
+                    if NewY < threshold then NewY = 0 end
+                    if NewX + Gui.AbsoluteSize.X > vp.X - threshold then NewX = vp.X - Gui.AbsoluteSize.X end
+                    if NewY + Gui.AbsoluteSize.Y > vp.Y - threshold then NewY = vp.Y - Gui.AbsoluteSize.Y end
                 end
 
                 Gui.Position = UDim2New(StartPosition.X.Scale, NewX, StartPosition.Y.Scale, NewY)
@@ -799,18 +789,7 @@ local Library do
         IgnoreGuiInset = true
     })
 
-    Library.SnappingGrid = Instances:Create("ImageLabel", {
-        Parent = Library.Holder.Instance,
-        Name = "SnappingGrid",
-        Size = UDim2New(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://6372755229",
-        ImageTransparency = 0.85,
-        ScaleType = Enum.ScaleType.Tile,
-        TileSize = UDim2New(0, Library.SnappingGridSize, 0, Library.SnappingGridSize),
-        ZIndex = -10,
-        Visible = false
-    }).Instance
+
 
     Library.NotifHolder = Instances:Create("Frame", {
         Parent = Library.Holder.Instance,
@@ -4566,9 +4545,7 @@ local Library do
             Window.IsOpen = Bool
             Library.IsOpen = Bool
             Items["Outline"].Instance.Visible = Bool
-            if Library.SnappingGrid then
-                Library.SnappingGrid.Visible = Bool
-            end
+
         end
 
         Items["SearchPopup"] = Instances:Create("Frame", {
